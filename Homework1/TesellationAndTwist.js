@@ -51,17 +51,17 @@ function init()
 	scalePosition = gl.getUniformLocation( program, "scale" );
 	
     document.getElementById("tesellationSlider").onchange = function() {
-        numTimesToSubdivide = event.srcElement.value;
+        numTimesToSubdivide = this.value;
         render();
     };
 	
-	document.getElementById("angleSlider").onchange = function() {
-        angle = event.srcElement.value;
+	document.getElementById("angleSlider").onchange = function(e) {
+        angle = this.value;
         render();
     };
 	
-	document.getElementById("scaleSlider").onchange = function() {
-        scale = 1/event.srcElement.value;
+	document.getElementById("scaleSlider").onchange = function(e) {
+        scale = 1/this.value;
         render();
     };
 
