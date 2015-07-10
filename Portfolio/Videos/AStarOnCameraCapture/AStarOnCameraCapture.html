@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A Star and JPS+ on OpenCV-Camera Image</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <ul>
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../Resume/Resume.html">Resume</a></li>
+                <li><a href="../../Portfolio.html">Portfolio</a></li>
+            </ul>
+        </nav>
+    </div>
+    <h1>Path-finding using JPS+ and A* on map created from camera (C++, OpenCV)</h1>
+
+    <p>In this project, a group of 5 people and me created a software able to take a photo with the camera of a laptop and generate a map that can be used in pathfinding.</p>
+    <p>During this project I was in charge of the design of the algorithm for recognizing the map.</p>
+    <p>The project uses the following technologies:</p>
+
+    <div class="listTechnologies">
+        <ul>
+            <li>OpenCV</li>
+            <li>DirectX</li>
+            <li>C++</li>
+        </ul>
+    </div>
+
+    <p>The next techniques of image processing were used:</p>
+    <div class="listTechnologies">
+        <ul>
+            <li>Average of images (to eliminate noise)</li>
+            <li>Smoothing by parts (to keep edges but smooth homogeneous parts)</li>
+            <li>Morphological mathematics (to fill holes in binary image)</li>
+            <li>Otsu (to calculate a global threshold)</li>
+            <li>Local Threshold based in Gaussian functions (to calculate a local threshold)</li>
+            <li>Point to point OR operation (to combine the result of both thresholds)</li>
+            <li>Thinning with Zhang and Suen (to make all lines of just one pixel width)</li>
+            <li>Polygonal approximation (improve quality of map)</li>
+        </ul>
+    </div>
+    <p>
+        The project was also able to recognize some figures by mean of neural networks using the output of the polygonal approximation.</p>
+
+    <p>
+        Some of the algorithms were developed in C++, others were taken from the OpenCV library.
+    </p>
+
+    <center>
+        <img src="sExp.jpg" alt="First Experiment" style="width:512px;height:288px;">
+        <img src="Image.jpg" alt="Second Experiment" style="width:512px;height:288px;">
+        <img src="or operations.jpg" alt="Third Experiment" style="width:512px;height:288px;">
+        <img src="scr3.png" alt="Fourth Experiment" style="width:512px;height:288px;">
+    </center>
+
+    <footer>
+        <ul>
+            <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
+            <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
+        </ul>
+    </footer>
+</body>
+</html>
