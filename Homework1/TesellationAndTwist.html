@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 <title>Tesellation and Twist</title>
-
+<link rel="stylesheet" type="text/css" href="./../css/main.css">
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec4 vPosition;
@@ -45,6 +45,22 @@ main()
 </head>   
 
 <body>
+
+<nav>
+    		<ul>
+        		<li><a href="../index.html">Home</a></li>
+				<li><a href="TesellationAndTwist.html">WebGL</a></li>
+    		</ul>
+</nav>
+
+<canvas id="gl-canvas" width="512" height="512">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+
+
+<form >
+ <fieldset class="fieldset-auto-width">
+  <legend>Parameters:</legend>
 <div>
 tesellation  0 <input id="tesellationSlider" type="range"
  min="0" max="5" step="1" value="0" />
@@ -62,9 +78,15 @@ scale 1<input id="scaleSlider" type="range"
  min="1" max="5" step="0.1" value="1" />
  1/5
 </div>
+ </fieldset>
+</form>
 
-<canvas id="gl-canvas" width="512" height="512">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
+<footer>
+    		<ul>
+        		<li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
+        		<li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
+			</ul>
+</footer>
+
 </body>
 </html>
