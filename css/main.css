@@ -2,18 +2,18 @@ body {
     margin: 60px auto;
     width: 70%;
 }
-nav ul {
+.header nav ul {
     font-family:'Helvetica', 'Arial', 'Sans-Serif';
     padding: 0px;
     list-style: none;
     font-weight: bold;
 }
 
-nav{
+.header nav{
 	border-bottom: 1px solid #d5d5d5;
 }
 
-nav ul li, footer ul li {
+.header nav ul li, footer ul li {
     display: inline;
     margin-right: 20px;
 }
@@ -59,4 +59,28 @@ ul.posts li {
          display: inline-block;
 }
 
+.videoWrapper {
+	position: relative;
+}
+.videoWrapper iframe {
+	display: block;
+    margin: auto;
+}
 
+
+
+.listUrls nav {
+	border-bottom: none;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 1.5em;
+    line-height: 1.4em;
+    color: #333;
+}
+
+.listTechnologies ul li {
+    font-size: 1.5em;
+    line-height: 1.4em;
+    color: #333;
+}

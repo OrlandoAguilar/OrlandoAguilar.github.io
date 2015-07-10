@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Tesellation and Twist</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        uniform float angle;
+        uniform float scale;
+
+        void
+        main()
+        {
+
+        vec4 pos=vPosition;
+
+        float dist=length(vPosition);
+
+        float ct=cos(dist*angle);
+        float st=sin(dist*angle);
+        pos.x=(vPosition.x*ct-vPosition.y*st)*scale;
+        pos.y=(vPosition.x*st+vPosition.y*ct)*scale;
+        pos.z=0.0; pos.w=1.0;
+
+        gl_Position = pos;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        void
+        main()
+        {
+        gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
+        }
+    </script>
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV.js"></script>
+    <script type="text/javascript" src="TesellationAndTwist.js"></script>
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <ul>
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../Resume/Resume.html">Resume</a></li>
+                <li><a href="../../Portfolio.html">Portfolio</a></li>
+            </ul>
+        </nav>
+    </div>
+    <h1>Tesellation and Twist</h1>
+
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+
+    <form>
+        <fieldset class="fieldset-auto-width">
+            <legend>Parameters:</legend>
+            <div>
+                tesellation  0 <input id="tesellationSlider" type="range"
+                                      min="0" max="5" step="1" value="5" />
+                5
+            </div>
+            <div>
+                angle  -2&#928;<input id="angleSlider" type="range"
+                                      min="-6.28" max="6.28" step="0.0628" value="6.0" />
+                2&#928;
+            </div>
+            <div>
+                scale 1<input id="scaleSlider" type="range"
+                              min="1" max="5" step="0.1" value="1" />
+                1/5
+            </div>
+        </fieldset>
+    </form>
+    <footer>
+        <ul>
+            <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
+            <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
+        </ul>
+    </footer>
+</body>
+</html>

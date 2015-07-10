@@ -50,17 +50,23 @@ function init()
 	anglePosition = gl.getUniformLocation( program, "angle" );
 	scalePosition = gl.getUniformLocation( program, "scale" );
 	
-    document.getElementById("tesellationSlider").onchange = function() {
+	var tesellationSlider = document.getElementById("tesellationSlider");
+	numTimesToSubdivide = 5;
+	tesellationSlider.onchange = function () {
         numTimesToSubdivide = this.value;
         render();
     };
 	
-	document.getElementById("angleSlider").onchange = function(e) {
+	var angleSlider = document.getElementById("angleSlider");
+	angle = 6;
+	angleSlider.onchange = function (e) {
         angle = this.value;
         render();
     };
 	
-	document.getElementById("scaleSlider").onchange = function(e) {
+	var scaleSlider = document.getElementById("scaleSlider");
+	scale = 1 ;
+	scaleSlider.onchange = function (e) {
         scale = 1/this.value;
         render();
     };
@@ -122,5 +128,5 @@ function render()
 	
     gl.drawArrays( gl.TRIANGLES, 0, points.length );
     points = [];
-    //requestAnimFrame(render);
+  
 }
