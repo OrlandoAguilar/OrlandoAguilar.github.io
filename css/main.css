@@ -19,7 +19,7 @@ body {
 }
 a {
     text-decoration: none;
-    color: #999;
+    color: #333;
 }
 a:hover {
     text-decoration: underline;
@@ -33,6 +33,13 @@ p {
     line-height: 1.4em;
     color: #333;
 }
+
+p a {
+    text-decoration: none;
+    color: #161;
+     text-decoration: underline;
+}
+
 footer {
     
     font-size: .8em;
@@ -66,7 +73,6 @@ ul.posts li {
 	display: block;
     margin: auto;
 }
-
 
 
 .listUrls nav {
