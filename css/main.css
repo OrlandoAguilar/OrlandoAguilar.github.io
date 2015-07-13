@@ -19,7 +19,7 @@ body {
 }
 a {
     text-decoration: none;
-    color: #333;
+    color: #222;
 }
 a:hover {
     text-decoration: underline;
@@ -31,7 +31,7 @@ h1 {
 p {
     font-size: 1.5em;
     line-height: 1.4em;
-    color: #333;
+    color: #222;
 }
 
 p a {
@@ -82,7 +82,7 @@ ul.posts li {
     padding: 0;
     font-size: 1.5em;
     line-height: 1.4em;
-    color: #333;
+    color: #222;
 }
 
 .listTechnologies ul li {
