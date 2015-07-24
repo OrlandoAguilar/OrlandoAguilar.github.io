@@ -661,3 +661,5 @@ var sizeof = {
     'mat3' : new Float32Array( flatten(mat3()) ).byteLength,
     'mat4' : new Float32Array( flatten(mat4()) ).byteLength
 };
+
+
