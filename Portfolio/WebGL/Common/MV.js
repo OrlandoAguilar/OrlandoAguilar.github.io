@@ -16,9 +16,10 @@ function _argumentsToArray( args )
 
 //----------------------------------------------------------------------------
 
-function radians( degrees ) {
-    return degrees * Math.PI / 180.0;
+function radians( deg ) {
+    return deg * Math.PI / 180.0;
 }
+
 
 //----------------------------------------------------------------------------
 //

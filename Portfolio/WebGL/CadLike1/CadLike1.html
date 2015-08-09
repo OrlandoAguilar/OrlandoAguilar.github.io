@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="description" content="WebGL">
+    <meta name="keywords" content="WebGL,3D,Portfolio,JavaScript,Programming,CAD">
+    <meta name="author" content="Orlando Aguilar Vivanco">
+    <!--
+    <meta http-equiv="Chache-Control" content="no-cache,no-store,must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+        -->
+    <title>Cad-Like Application</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+    <link rel="stylesheet" href="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.css">
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        precision mediump float;
+        attribute vec4 vPosition;
+        attribute vec3 nPosition;
+        uniform mat4 modelMatrix;
+        uniform mat4 viewMatrix;
+        uniform mat4 projectionMatrix;
+        varying vec3 normal;
+        void
+        main()
+        {
+        gl_Position = projectionMatrix*viewMatrix*modelMatrix*vPosition;
+        normal=normalize(vec3(modelMatrix*vec4(nPosition,0)));
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 normal;
+        uniform vec4 color;
+        uniform int wire;
+
+        vec3 Emispheric(vec3 normal,vec3 upColor,vec3 downColor){
+            float fact=normal.y*0.5+0.5;    //to range 0-1
+            return mix(downColor,upColor,fact);
+        }
+
+        void
+        main()
+        {
+        vec4 c=color;
+        if (wire==0){
+        vec3 n=normalize(normal);
+        vec3 light=Emispheric(normal,vec3(0.9),vec3(0.1));
+        c.rgb*=light;
+        }
+        gl_FragColor = c;
+        }
+    </script>
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV.js"></script>
+    <script type="text/javascript" src="CadLike1.js"></script>
+    <script type="text/javascript" src="../Common/jscolor/jscolor.js"></script>
+    <script type="text/javascript" src="../Common/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <ul>
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../Resume/Resume.html">Resume</a></li>
+                <li><a href="../../Portfolio.html">Portfolio</a></li>
+            </ul>
+        </nav>
+    </div>
+    <h1>Cad-Like Application</h1>
+
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+    <div class="fieldset-auto-width">
+        
+        <!--Create controls-->
+        <div class="left">
+            <form>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Create:</legend>
+
+                    <div>
+                        <label for="objects">Type</label>
+                        <select name="objects" id="objects">
+                            <option value="1" selected="selected">Sphere</option>
+                            <option value="2">Cone</option>
+                            <option value="3">Cylinder</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="sectors">sectors</label>
+                            <input id="sectors" name="sectors" value="10" style="width:80px">
+                        </div>
+
+                        <div id="ringsSpace">
+                            <label for="rings">rings</label>
+                            <input id="rings" name="rings" value="10" style="width:80px">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" id="buttonInsert">Insert</button>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+        <!--end create controls-->
+
+        <!-- Camera controls-->
+        <div class="left">
+            <form>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Camera:</legend>
+                    <div>
+                        <label for="radius">radius</label>
+                        <input id="radius" name="radius" value="5" style="width:80px">
+                    </div>
+
+                    <div>
+                        <div class="slider">
+                            <label for="thetaSlider">&#928;</label>
+                            <div id="thetaSlider"></div>
+                        </div>
+                        <div class="slider">
+                            <label for="phiSlider">&#934;</label>
+                            <div id="phiSlider"></div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <!-- end camera controls-->
+
+        <!-- Object controls-->
+        <form>
+            <fieldset class="fieldset-auto-width">
+                <legend>Object:</legend>
+                <div>
+                    <fieldset class="fieldset-auto-width">
+                        <legend>Traslation:</legend>
+                        <div class="fieldset-auto-width">
+                            <label for="tx">X</label>
+                            <input id="tx" name="tx" value="0" style="width:80px">
+                        </div>
+
+                        <div class="fieldset-auto-width">
+                            <label for="ty">Y</label>
+                            <input id="ty" name="ty" value="0" style="width:80px">
+                        </div>
+                        <div class="fieldset-auto-width">
+                            <label for="tz">Z</label>
+                            <input id="tz" name="tz" value="0" style="width:80px">
+                        </div>
+                    </fieldset>
+                </div>
+                <div>
+                    <fieldset class="fieldset-auto-width">
+                        <legend>Rotation:</legend>
+                        <div class="fieldset-auto-width">
+                            <label for="rx">X</label>
+                            <input id="rx" name="rx" value="0" style="width:80px">
+                        </div>
+
+                        <div class="fieldset-auto-width">
+                            <label for="ry">Y</label>
+                            <input id="ry" name="ry" value="0" style="width:80px">
+                        </div>
+                        <div class="fieldset-auto-width">
+                            <label for="rz">Z</label>
+                            <input id="rz" name="rz" value="0" style="width:80px">
+                        </div>
+                    </fieldset>
+                </div>
+                <div>
+                    <fieldset class="fieldset-auto-width">
+                        <legend>Scale:</legend>
+                        <div class="fieldset-auto-width">
+                            <label for="sx">X</label>
+                            <input id="sx" name="sx" value="1" style="width:80px">
+                        </div>
+
+                        <div class="fieldset-auto-width">
+                            <label for="sy">Y</label>
+                            <input id="sy" name="sy" value="1" style="width:80px">
+                        </div>
+                        <div class="fieldset-auto-width">
+                            <label for="sz">Z</label>
+                            <input id="sz" name="sz" value="1" style="width:80px">
+                        </div>
+                    </fieldset>
+                </div>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Color:</legend>
+                    <div>
+                        <input class="color" value="66ff00" id="colorPicker">
+                    </div>
+                </fieldset>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Select:</legend>
+                    <div>
+                        <button type="button" id="previous"> previous </button>
+                        <button type="button" id="next"> next </button>
+                    </div>
+                </fieldset>
+
+            </fieldset>
+        </form>
+        <!-- End Object controls-->
+
+    </div>
+    <footer>
+        <ul>
+            <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
+            <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
+        </ul>
+    </footer>
+</body>
+</html>

@@ -90,3 +90,19 @@ ul.posts li {
     line-height: 1.4em;
     color: #333;
 }
+
+.slider {
+  display: inline-block;
+  width: 100px;
+  height: 30px;
+  margin: 1em;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+

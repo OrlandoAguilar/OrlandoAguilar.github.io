@@ -39,7 +39,7 @@ function init()
 
     bufferId = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
-    gl.bufferData( gl.ARRAY_BUFFER, Math.pow(4, 5)*8*3, gl.STATIC_DRAW );
+    gl.bufferData( gl.ARRAY_BUFFER, Math.pow(4, 6)*8*3, gl.STATIC_DRAW );
 
     // Associate out shader variables with our data buffer
 
@@ -51,22 +51,22 @@ function init()
 	scalePosition = gl.getUniformLocation( program, "scale" );
 	
 	var tesellationSlider = document.getElementById("tesellationSlider");
-	numTimesToSubdivide = 5;
-	tesellationSlider.onchange = function () {
+	numTimesToSubdivide = 6;
+	tesellationSlider.oninput = function (e) {
         numTimesToSubdivide = this.value;
         render();
     };
 	
 	var angleSlider = document.getElementById("angleSlider");
 	angle = 6;
-	angleSlider.onchange = function (e) {
+	angleSlider.oninput = function (e) {
         angle = this.value;
         render();
     };
 	
 	var scaleSlider = document.getElementById("scaleSlider");
 	scale = 1 ;
-	scaleSlider.onchange = function (e) {
+	scaleSlider.oninput = function (e) {
         scale = 1/this.value;
         render();
     };

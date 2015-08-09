@@ -15,7 +15,7 @@
 
         vec4 pos=vPosition;
 
-        float dist=length(vPosition);
+        float dist=length(vPosition.xyz);
 
         float ct=cos(dist*angle);
         float st=sin(dist*angle);
@@ -61,8 +61,8 @@
             <legend>Parameters:</legend>
             <div>
                 tesellation  0 <input id="tesellationSlider" type="range"
-                                      min="0" max="5" step="1" value="5" />
-                5
+                                      min="0" max="6" step="1" value="6" />
+                6
             </div>
             <div>
                 angle  -2&#928;<input id="angleSlider" type="range"
