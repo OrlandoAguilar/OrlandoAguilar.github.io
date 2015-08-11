@@ -3,50 +3,43 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <meta name="description" content="WebGL">
-    <meta name="keywords" content="WebGL,3D,Portfolio,JavaScript,Programming,CAD">
+    <meta name="keywords" content="WebGL,3D,Portfolio,JavaScript,Programming,GJK,collision detection,contact information,EPA">
     <meta name="author" content="Orlando Aguilar Vivanco">
-    <!--
-    <meta http-equiv="Chache-Control" content="no-cache,no-store,must-revalidate"/>
+    
+    <!--<meta http-equiv="Chache-Control" content="no-cache,no-store,must-revalidate"/>
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="0"/>
-        -->
-    <title>Cad-Like Application</title>
+   -->
+    <title>EPA</title>
     <link rel="stylesheet" type="text/css" href="../../../css/main.css">
     <link rel="stylesheet" href="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.css">
     <script id="vertex-shader" type="x-shader/x-vertex">
         precision mediump float;
         attribute vec4 vPosition;
-        attribute vec3 nPosition;
         uniform mat4 modelMatrix;
         uniform mat4 viewMatrix;
         uniform mat4 projectionMatrix;
-        varying vec3 normal;
+        varying float yy;
         void
         main()
         {
         gl_Position = projectionMatrix*viewMatrix*modelMatrix*vPosition;
-        normal=normalize(vec3(modelMatrix*vec4(nPosition,0)));
+        gl_PointSize = 10.0;
+        yy=vPosition.y;
         }
     </script>
     <script id="fragment-shader" type="x-shader/x-fragment">
         precision mediump float;
-        varying vec3 normal;
         uniform vec4 color;
         uniform int wire;
-
-        vec3 Emispheric(vec3 normal,vec3 upColor,vec3 downColor){
-            float fact=normal.y*0.5+0.5;    //to range 0-1
-            return mix(downColor,upColor,fact);
-        }
+    varying float yy;
 
         void
         main()
         {
         vec4 c=color;
-        if (wire==0){
-        vec3 n=normalize(normal);
-        vec3 light=Emispheric(normal,vec3(0.9),vec3(0.1));
-        c.rgb*=light;
+        if (wire==0){      
+        c.rgb*=yy;
         }
         gl_FragColor = c;
         }
@@ -54,7 +47,9 @@
     <script type="text/javascript" src="../Common/webgl-utils.js"></script>
     <script type="text/javascript" src="../Common/initShaders.js"></script>
     <script type="text/javascript" src="../Common/MV2.js"></script>
-    <script type="text/javascript" src="CadLike1.js"></script>
+    <script type="text/javascript" src="GJK.js"></script>
+    <script type="text/javascript" src="EPA.js"></script>
+    <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="../Common/jscolor/jscolor.js"></script>
     <script type="text/javascript" src="../Common/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
@@ -70,7 +65,7 @@
             </ul>
         </nav>
     </div>
-    <h1>Cad-Like Application</h1>
+    <h1>EPA algorithm</h1>
 
     <canvas id="gl-canvas" width="512" height="512">
         Oops ... your browser doesn't support the HTML5 canvas element
@@ -81,33 +76,9 @@
         <div class="left">
             <form>
                 <fieldset class="fieldset-auto-width">
-                    <legend>Create:</legend>
-
-                    <div>
-                        <label for="objects">Type</label>
-                        <select name="objects" id="objects">
-                            <option value="1" selected="selected">Sphere</option>
-                            <option value="2">Cone</option>
-                            <option value="3">Cylinder</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <div>
-                            <label for="sectors">sectors</label>
-                            <input id="sectors" name="sectors" value="10" style="width:80px">
-                        </div>
-
-                        <div id="ringsSpace">
-                            <label for="rings">rings</label>
-                            <input id="rings" name="rings" value="10" style="width:80px">
-                        </div>
-                    </div>
-
-                    <div>
-                        <button type="button" id="buttonInsert">Insert</button>
-                    </div>
-
+                    <legend>Steps And Render:</legend>
+                    <button type="button" id="render"> by steps </button>
+                    <button type="button" id="automatic"> automatic </button>
                 </fieldset>
             </form>
         </div>
@@ -147,7 +118,7 @@
                         <legend>Traslation:</legend>
                         <div class="fieldset-auto-width">
                             <label for="tx">X</label>
-                            <input id="tx" name="tx" value="0" style="width:80px">
+                            <input id="tx" name="tx" value="0.9" style="width:80px">
                         </div>
 
                         <div class="fieldset-auto-width">
@@ -207,6 +178,7 @@
                     <div>
                         <button type="button" id="previous"> previous </button>
                         <button type="button" id="next"> next </button>
+                        
                     </div>
                 </fieldset>
 
