@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="description" content="WebGL">
+    <meta name="keywords" content="WebGL,3D,Portfolio,JavaScript,Programming,CAD">
+    <meta name="author" content="Orlando Aguilar Vivanco">
+    
+    <meta http-equiv="Chache-Control" content="no-cache,no-store,must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+        
+    <title>Lights</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+    <link rel="stylesheet" href="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.css">
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        precision mediump float;
+
+        attribute vec4 vPosition;
+        attribute vec4 vNormal;
+
+        uniform mat4 modelViewMatrix;
+        uniform mat4 projectionMatrix;
+        uniform mat3 normalMatrix;
+
+        uniform vec4 lightPosition1;
+        uniform vec4 lightPosition2;
+        uniform vec4 lightPosition3;
+
+        varying vec3 normal;
+        varying vec3 eye;
+
+        varying vec3 light1;
+        varying vec3 light2;
+        varying vec3 light3;
+
+        void main()
+        {
+        vec4 pos4 = (modelViewMatrix * vPosition);
+        vec3 pos= pos4.xyz;
+
+        light1=(lightPosition1.w < 0.0? lightPosition1.xyz : lightPosition1.xyz - pos);
+        light2=(lightPosition2.w < 0.0? lightPosition2.xyz : lightPosition2.xyz - pos);
+        light3=(lightPosition3.w < 0.0? lightPosition3.xyz : lightPosition3.xyz - pos);
+
+        eye =  -normalize(pos);
+        normal = normalize( normalMatrix*vNormal.xyz);
+        gl_Position = projectionMatrix * pos4;
+
+        gl_PointSize = 10.0;
+
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec3 normal;
+        varying vec3 eye;
+
+        varying vec3 light1;
+        varying vec3 light2;
+        varying vec3 light3;
+
+        uniform vec3 diffuseLight1;
+        uniform vec3 diffuseLight2;
+        uniform vec3 diffuseLight3;
+        uniform vec3 specularLight1;
+        uniform vec3 specularLight2;
+        uniform vec3 specularLight3;
+
+        uniform vec3 diffuseMaterial;
+        uniform vec3 specularMaterial;
+        uniform float shininessMaterial;
+
+        uniform vec4 lightPosition1;
+        uniform vec4 lightPosition2;
+        uniform vec4 lightPosition3;
+
+        uniform vec3 lightConeDirection2;
+
+        uniform int wireframe;
+
+        uniform int activeLight0;
+        uniform int activeLight1;
+        uniform int activeLight2;
+
+        float saturate(float f){
+        return max(f,0.0);
+        }
+
+
+        vec3 Emispheric(vec3 normal,vec3 upColor,vec3 downColor){
+        float fact=normal.y*0.5+0.5;    //to range 0-1
+        return mix(downColor,upColor,fact);
+        }
+
+        float DecayFact(float dec){
+        return 1.0/(dec*dec+dec+1.0);
+        }
+
+        vec3 Light(vec3 N, vec3 E, vec3 light,vec3 diffuseProduct,vec3 specularProduct,float shnss, float dfactor,float cone){
+
+        vec3 L= normalize(light);
+        vec3 H = normalize( L + E );
+
+        float Kd = saturate( dot(L, N) );
+        vec3  diffuse = Kd*diffuseProduct;
+
+        vec3  specular =vec3(0.0);
+
+        float decay=length(light.xyz);
+
+        if( Kd >= 0.0 ){
+        float Ks = pow( saturate(dot(N, H)), shnss );
+        specular = Ks * specularProduct;
+        }
+
+        float attn=1.0;
+        if (dfactor>0.0) attn=DecayFact(decay)*dfactor;
+        
+        if (cone>0.0 && dot(normalize(lightConeDirection2),-L) < cone){
+        attn=0.0;
+        }
+
+        return (diffuse+specular)*attn;
+        }
+
+        void main(){
+
+        if (wireframe>0) { gl_FragColor=vec4(1); return;}
+
+        vec3 E= normalize(eye);
+        vec3 N=normalize(normal);
+
+        vec3 ambient=Emispheric(N,vec3(0.1),vec3(0.05));
+
+        vec3 l1=activeLight0>0? Light(N, E, light1, diffuseMaterial*diffuseLight1,specularMaterial*specularLight1,shininessMaterial, lightPosition1.w,-1.0) : vec3(0);
+        vec3 l2=activeLight1>0?Light(N, E, light2, diffuseMaterial*diffuseLight2,specularMaterial*specularLight2,shininessMaterial, lightPosition2.w,0.7) : vec3(0);
+        vec3 l3=activeLight2>0?Light(N, E, light3, diffuseMaterial*diffuseLight3,specularMaterial*specularLight3,shininessMaterial, lightPosition3.w,-1.0) : vec3(0);
+
+        vec3 color=l1+l2+l3+ambient*diffuseMaterial;
+
+        gl_FragColor = vec4(color,1);
+        }
+    </script>
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV2.js"></script>
+    <script type="text/javascript" src="Utility.js?4"></script>
+    <script type="text/javascript" src="Models.js?4"></script>
+    <script type="text/javascript" src="Lights.js?5"></script>
+    <script type="text/javascript" src="../Common/jscolor/jscolor.js"></script>
+    <script type="text/javascript" src="../Common/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <ul>
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../Resume/Resume.html">Resume</a></li>
+                <li><a href="../../Portfolio.html">Portfolio</a></li>
+            </ul>
+        </nav>
+    </div>
+    <h1>Lights</h1>
+
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+    <div class="fieldset-auto-width">
+        
+        <!--Create controls-->
+        <div class="left">
+            <form>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Create:</legend>
+
+                    <div>
+                        <label for="objects">Type</label>
+                        <select name="objects" id="objects">
+                            <option value="1" selected="selected">Sphere</option>
+                            <option value="2">Cone</option>
+                            <option value="3">Cylinder</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="sectors">sectors</label>
+                            <input id="sectors" name="sectors" value="10" style="width:80px">
+                        </div>
+
+                        <div id="ringsSpace">
+                            <label for="rings">rings</label>
+                            <input id="rings" name="rings" value="10" style="width:80px">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" id="buttonInsert">Insert</button>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+        <!--end create controls-->
+
+        <!-- Camera controls-->
+        <div class="left">
+            <form>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Camera:</legend>
+                    <div>
+                        <label for="radius">radius</label>
+                        <input id="radius" name="radius" value="8" style="width:80px">
+                    </div>
+
+                    <div>
+                        <div class="slider">
+                            <label for="thetaSlider">&#928;</label>
+                            <div id="thetaSlider"></div>
+                        </div>
+                        <div class="slider">
+                            <label for="phiSlider">&#934;</label>
+                            <div id="phiSlider"></div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <!-- end camera controls-->
+
+        <!-- Object controls-->
+        <form>
+            <fieldset class="fieldset-auto-width">
+                <legend>Object:</legend>
+                <div>
+                    <fieldset class="fieldset-auto-width">
+                        <legend>Traslation:</legend>
+                        <div class="fieldset-auto-width">
+                            <label for="tx">X</label>
+                            <input id="tx" name="tx" value="0" style="width:80px">
+                        </div>
+
+                        <div class="fieldset-auto-width">
+                            <label for="ty">Y</label>
+                            <input id="ty" name="ty" value="0" style="width:80px">
+                        </div>
+                        <div class="fieldset-auto-width">
+                            <label for="tz">Z</label>
+                            <input id="tz" name="tz" value="0" style="width:80px">
+                        </div>
+                    </fieldset>
+                </div>
+                <div>
+                    <fieldset class="fieldset-auto-width">
+                        <legend>Rotation:</legend>
+                        <div class="fieldset-auto-width">
+                            <label for="rx">X</label>
+                            <input id="rx" name="rx" value="0" style="width:80px">
+                        </div>
+
+                        <div class="fieldset-auto-width">
+                            <label for="ry">Y</label>
+                            <input id="ry" name="ry" value="0" style="width:80px">
+                        </div>
+                        <div class="fieldset-auto-width">
+                            <label for="rz">Z</label>
+                            <input id="rz" name="rz" value="0" style="width:80px">
+                        </div>
+                    </fieldset>
+                </div>
+                <div>
+                    <fieldset class="fieldset-auto-width">
+                        <legend>Scale:</legend>
+                        <div class="fieldset-auto-width">
+                            <label for="sx">X</label>
+                            <input id="sx" name="sx" value="1" style="width:80px">
+                        </div>
+
+                        <div class="fieldset-auto-width">
+                            <label for="sy">Y</label>
+                            <input id="sy" name="sy" value="1" style="width:80px">
+                        </div>
+                        <div class="fieldset-auto-width">
+                            <label for="sz">Z</label>
+                            <input id="sz" name="sz" value="1" style="width:80px">
+                        </div>
+                    </fieldset>
+                </div>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Light properties:</legend>
+                    <div>
+                        <div class="fieldset-auto-width">
+                            <label for="diffuse">Diffuse</label>
+                            <input class="color" value="66ff0f" id="diffuse">
+                        </div><br>
+                        <div class="fieldset-auto-width">
+                            <label for="specular" >Specular</label>
+                            <input class="color" value="66ff0f" id="specular">
+                        </div><br>
+                            
+                            <div class="fieldset-auto-width">
+                                <label for="sz" id="labelSD">Shininess</label>
+                                <input id="shininess" name="shininess" value="10" style="width:80px">
+                            </div>
+                        </div><br>
+
+                    <fieldset>
+                        <input type="checkbox" id="l1" checked> Directional light<br>
+                        <input type="checkbox" id="l2" checked> Spot light<br>
+                        <input type="checkbox" id="l3" checked> Point light<br>
+                        <br>
+                        <input type="checkbox" id="anim" checked> Animate<br>
+                    </fieldset>
+                </fieldset>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Select:</legend>
+                    <div>
+                        <button type="button" id="previous"> previous </button>
+                        <button type="button" id="next"> next </button>
+                    </div>
+                </fieldset>
+
+            </fieldset>
+        </form>
+        <!-- End Object controls-->
+
+    </div>
+    <footer>
+        <ul>
+            <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
+            <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
+        </ul>
+    </footer>
+</body>
+</html>

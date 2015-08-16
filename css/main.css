@@ -105,4 +105,9 @@ ul.posts li {
 .right {
     float: right;
 }
-
+ 
+.color{
+  display: inline-block;
+  width: 100px;
+  float: left;
+}

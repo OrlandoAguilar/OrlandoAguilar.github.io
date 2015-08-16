@@ -22,6 +22,8 @@ function radians( degrees ) {
     return degrees * Math.PI / 180.0;
 }
 
+
+
 //----------------------------------------------------------------------------
 //
 //  Vector Constructors
