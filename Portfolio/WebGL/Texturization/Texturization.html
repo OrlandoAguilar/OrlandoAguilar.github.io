@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="description" content="WebGL">
+    <meta name="keywords" content="WebGL,3D,Portfolio,JavaScript,Programming,BRDF,texturization">
+    <meta name="author" content="Orlando Aguilar Vivanco">
+
+    <meta http-equiv="Chache-Control" content="no-cache,no-store,must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    
+    <title>BRDF and Texturization</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+    <link rel="stylesheet" href="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.css">
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        uniform mat4 modelMatrix;
+        uniform mat4 viewMatrix, viewInverseMatrix;
+        uniform mat4 projectionMatrix;
+        uniform mat3 normalMatrix;
+
+        uniform vec3 lightPos;
+
+        attribute vec4 vPosition;
+        attribute vec3 vNormals;
+        attribute vec2 vUV;
+
+        varying vec2 texCoord;
+        varying vec3 normalVec, lightVec, eyeVec;
+
+        void main()
+        {
+        texCoord = vUV;
+        normalVec = normalMatrix*vNormals;
+        vec3 worldVertex = vec3(modelMatrix * vPosition);
+        eyeVec=vec3(viewInverseMatrix[3].xyz)-worldVertex;
+        lightVec = lightPos - worldVertex;
+        gl_Position = projectionMatrix*viewMatrix*vec4(worldVertex,1);
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        #define M_PI 3.1415926535897932384626433832795
+
+        const vec3 phongDiffuse=vec3(1.0);
+        const vec3 phongSpecular=vec3(1.0,0.5,0.0);
+        const float phongShininess=3000.0;
+
+        const vec3 lightValue=vec3(0.8), lightAmbient=vec3(0.2);
+
+        const float gloss=0.45;
+        uniform float time;
+
+        uniform sampler2D earth;
+        uniform sampler2D atmosphere;
+
+        varying vec3 normalVec, lightVec, eyeVec;
+        varying vec2 texCoord;
+
+
+        vec3 SpecularBHDR(vec3 L, vec3 H, vec3 N,vec3 Ks,float a);
+
+        float saturate(float a){
+        return max(a,0.0);
+        }
+
+        void main()
+        {
+        vec3 N = normalize(normalVec);
+        vec3 E = normalize(eyeVec);
+        vec3 L = normalize(lightVec);
+
+        vec3 Ks=phongSpecular;
+        vec3 H=normalize(L+E);
+
+        float a=pow(phongShininess,gloss);
+
+        vec3 Kd = phongDiffuse*texture2D(earth,texCoord.st).rgb;
+
+        float clouds = texture2D(atmosphere,vec2(texCoord.s+time,texCoord.t)).b;
+        float night =  texture2D(atmosphere,texCoord.st).g;
+        float ocean =  texture2D(atmosphere,texCoord.st).r;
+
+        float lightQuantity=dot(N,L);
+
+        vec3 spec=vec3(0);
+
+        if (ocean>0.0){
+        spec=SpecularBHDR(L,H,N,Ks,a)*ocean;
+        }
+
+        vec3 illumination=lightAmbient*Kd+( saturate(lightQuantity)*Kd + spec)*lightValue+vec3(clouds*(1.0-0.2*cos(time*15.0)));
+
+        vec3 color=illumination;
+        color=mix(vec3(night),illumination,clamp((lightQuantity+0.2)*1.5,0.0,1.0));
+
+        gl_FragColor = vec4(color,1.0);
+        }
+
+        vec3 SpecularBHDR(vec3 L, vec3 H, vec3 N,vec3 Ks,float a){
+        float LdotH=dot(L,H);
+        float NdotH=dot(N,H);
+
+        vec3 fressnel=Ks + (1.0-Ks)*pow(1.0-LdotH,5.0);
+        float d=(a+2.0)*pow(saturate(NdotH),a)/(2.0*M_PI);
+        float g=1.0/pow(saturate(LdotH),2.0);
+        return fressnel*g*d/4.0; //I am using the approximation of G, therefore I am not dividing by the other dot products
+        }
+
+    </script>
+
+
+
+    <script id="vertex-shaderSun" type="x-shader/x-vertex">
+        #define M_PI 3.1415926535897932384626433832795
+
+        uniform mat4 modelMatrix;
+        uniform mat4 viewMatrix, viewInverseMatrix;
+        uniform mat4 projectionMatrix;
+        uniform mat3 normalMatrix;
+
+        uniform float time;
+
+        attribute vec4 vPosition;
+        attribute vec3 vNormals;
+        attribute vec2 vUV;
+
+        varying vec2 texCoord;
+        varying vec3 normalVec, eyeVec;
+
+        void main()
+        {
+        texCoord = vUV;
+        normalVec = normalize(normalMatrix*vNormals);
+        float tf=vUV.t*M_PI*8.0;
+        vec3 phase=0.03*normalVec*sin(time*40.0+tf);
+        vec3 worldVertex = vec3(modelMatrix * vec4(vPosition.xyz+phase,1));
+        eyeVec=vec3(viewInverseMatrix[3].xyz)-worldVertex;
+        gl_Position = projectionMatrix*viewMatrix*vec4(worldVertex,1);
+        }
+    </script>
+    <script id="fragment-shaderSun" type="x-shader/x-fragment">
+        precision mediump float;
+
+        uniform highp float time;
+
+        uniform sampler2D sun;
+
+        varying vec3 normalVec, eyeVec;
+        varying vec2 texCoord;
+
+        float saturate(float a){
+        return max(a,0.0);
+        }
+
+        void main()
+        {
+        vec3 N = normalize(normalVec);
+        vec3 E = normalize(eyeVec);
+
+        float EdotN=dot(E,N);
+
+        vec3 texture = texture2D(sun,vec2(texCoord.s+time,texCoord.t)).rgb;
+
+        texture=texture*(2.0+sin(time*(texCoord.s*texCoord.t)));
+        vec3 color=mix(vec3(1.0,0.5,0.0),texture,saturate(EdotN));
+        gl_FragColor = vec4(color,1.0);
+        }
+
+    </script>
+
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV2.js"></script>
+    <script type="text/javascript" src="../Common/Models.js"></script>
+    <script type="text/javascript" src="../Common/Utility.js"></script>
+    <script type="text/javascript" src="Texturization.js?=1"></script>
+    <script type="text/javascript" src="../Common/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <ul>
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../Resume/Resume.html">Resume</a></li>
+                <li><a href="../../Portfolio.html">Portfolio</a></li>
+            </ul>
+        </nav>
+    </div>
+    <h1>BRDF and Texturization</h1>
+
+    <canvas id="gl-canvas" width="1024" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+
+    <div class="left">
+        <form>
+            <fieldset class="fieldset-auto-width">
+                <legend>Camera:</legend>
+                <div>
+                    <label for="radius">radius</label>
+                    <input id="radius" name="radius" value="5" style="width:80px">
+                </div>
+
+                <div>
+                    <div class="slider">
+                        <label for="thetaSlider">&#928;</label>
+                        <div id="thetaSlider"></div>
+                    </div>
+                    <div class="slider">
+                        <label for="phiSlider">&#934;</label>
+                        <div id="phiSlider"></div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <footer>
+        <ul>
+            <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
+            <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
+        </ul>
+    </footer>
+</body>
+</html>

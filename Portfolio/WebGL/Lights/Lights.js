@@ -397,10 +397,10 @@ window.onload = function init() {
     position = vec3(0, -0.7, 0);
     scale = vec3(9, 0.1, 9);
     var c = new Cylinder(5, 0.5);
-  /*  c.instance.specular = vec3(0.8);
-    c.instance.diffuse = vec3(0.7);*/
     modelsList.push(c);
 
+    position = vec3(0);
+    scale = vec3(1,1,1);
 
     selected = modelsList.length - 1;
 
