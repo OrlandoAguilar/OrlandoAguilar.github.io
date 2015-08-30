@@ -12,9 +12,6 @@ var sunModel = null;
 var time = 0;
 
 //parameters of creation for models
-var diffuse = 0x666666;
-var specular = 0x666666;
-var shininess = 10.0;
 
 var near = 0.3;
 var far = 1000.0;
@@ -25,9 +22,6 @@ var aspect = 1.0;
 var radius = 3.0;
 var theta = 3.6;
 var phi = 0.0;
-const SPHERE = 1;
-const CONE = 2;
-const CYLINDER = 3;
 
 var loaded = 0;
 
@@ -174,11 +168,13 @@ window.onload = function init() {
     svNormals = gl.getAttribLocation(sunProgram, "vNormals");
     svUV = gl.getAttribLocation(sunProgram, "vUV");
 
+    const nvert = 30;
+
     scale = vec3(2.0, 2.0, 2.0);
-    earthModel = new Sphere(20, 20, 0.5);
+    earthModel = new Sphere(nvert, nvert, 0.5);
 
     scale = vec3(1.0,1.0,1.0);
-    sunModel = new Sphere(20, 20, 0.5);
+    sunModel = new Sphere(nvert, nvert, 0.5);
 
 
 
@@ -218,6 +214,8 @@ window.onload = function init() {
     });
 
     camera.radius = 5.5;
+
+    gl.cullFace(gl.BACK);
 
     render();
 }

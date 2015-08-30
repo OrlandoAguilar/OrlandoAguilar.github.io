@@ -3,9 +3,6 @@
 var canvas;
 var gl;
 
-var diffuse = 0x666666;
-var specular = 0x666666;
-var shininess = 10.0;
 
 var maxNumVertices = 10240;
 var index = 0;
@@ -47,10 +44,6 @@ var phi = -1.1;
 
 const at = vec3(0.0, 0.0, 0.0);
 const up = vec3(0.0, 1.0, 0.0);
-
-const SPHERE=1;
-const CONE=2;
-const CYLINDER=3;
 
 var objectTypeToCreate=SPHERE;
 
@@ -403,7 +396,7 @@ window.onload = function init() {
     scale = vec3(1,1,1);
 
     selected = modelsList.length - 1;
-
+    gl.cullFace(gl.BACK);
     render();
 }
 

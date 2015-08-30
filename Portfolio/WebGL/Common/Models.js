@@ -1,5 +1,14 @@
-﻿const LIGHT = 1;
+﻿var diffuse = 0x666666;
+var specular = 0x666666;
+var shininess = 10.0;
+
+const LIGHT = 1;
 const MODEL = 0;
+
+const PLANE = 4;
+const SPHERE = 1;
+const CONE = 2;
+const CYLINDER = 3;
 
 function Instance() {
     this.Mat = mat4();
@@ -379,4 +388,43 @@ function CreateByType(rings, sectors,radius,type) {
             break;
     }
     return sel;
+}
+
+
+function Plane() {
+        //create the model and save it on the hashtable
+        this.model = new Model();
+        this.model.type = PLANE;
+
+        var PI = 3.1415926535897;
+        var PI_2 = 3.1415926535897 / 2;
+
+        var indices = [0,1,2,   0,2,3];
+
+        var data = [
+            0.5, 0.5,0.0,    0.0,0.0,-1.0,   1.0,1.0,
+           -0.5, 0.5,0.0,    0.0,0.0,-1.0,   0.0,1.0,
+           -0.5,-0.5,0.0,    0.0,0.0,-1.0,   0.0,0.0,
+            0.5,-0.5,0.0,    0.0,0.0,-1.0,   1.0,0.0
+        ];
+
+        //data buffer
+        this.model.buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.model.buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(data), gl.STATIC_DRAW);
+
+        //index buffer
+
+        this.model.indexes = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.model.indexes);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(indices), gl.STATIC_DRAW);
+
+        this.model.numIndices = indices.length;
+
+    this.instance = new Instance();
+
+    this.instance.position = position;
+    this.instance.rotation = rotation;
+    this.instance.scale = scale;
+    this.instance.Update();
 }

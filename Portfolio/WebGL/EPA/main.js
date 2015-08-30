@@ -709,7 +709,7 @@ window.onload = function init() {
     epa.start(simplex);
 
     gl.enable(0x8642);
-
+    gl.cullFace(gl.BACK);
     renderG();
 }
 

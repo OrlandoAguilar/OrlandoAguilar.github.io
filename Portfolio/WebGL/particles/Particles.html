@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="description" content="WebGL">
+    <meta name="keywords" content="WebGL,3D,Portfolio,JavaScript,Programming,BRDF,texturization">
+    <meta name="author" content="Orlando Aguilar Vivanco">
+
+    <!--
+    <meta http-equiv="Chache-Control" content="no-cache,no-store,must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+        -->
+
+    <title>Particles and instance</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+    <link rel="stylesheet" href="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.css">
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        const float M_PI=3.1415926535897932384626433832795;
+        const float M_PI_5=M_PI/5.0;
+        const float radius=3.0;
+        const float speed=10.0;
+
+        attribute float vIndex;
+        attribute vec3 vPosition;
+        attribute vec2 vTextureCoordinates;
+
+        uniform mediump float time;
+        uniform mat4 modelMatrix;
+        uniform mat4 viewMatrix, viewInverseMatrix;
+        uniform mat4 projectionMatrix;
+
+        varying vec2 texCoord;
+
+        void main()
+        {
+        texCoord = vTextureCoordinates;
+
+        vec3 CameraRightW = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
+        vec3 CameraUpW = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+        vec3 center=vec3(modelMatrix[0][2], modelMatrix[1][2], modelMatrix[2][2]);  //position in world coordinates
+
+        float theta=mod(vIndex , 10.0);
+
+        float tm=time*speed;
+
+        center.y+=vIndex/10.0+tm;
+        center.y=mod(center.y,100.0);
+
+        float rd=radius*cos(tm)*cos(center.y);
+        center.x+=cos(M_PI_5*theta+tm)*rd;
+        center.z+=sin(M_PI_5*theta+tm)*rd;
+
+        
+        vec3 pos=center+vPosition.x*CameraRightW+vPosition.y*CameraUpW;
+        vec4 worldVertex = vec4(pos,1.0);
+        worldVertex=projectionMatrix*viewMatrix*worldVertex;
+        gl_Position = worldVertex;
+        }
+
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        const vec4 tint=vec4(0.1,0.1,1.0,1.0);
+
+        uniform float time;
+        uniform sampler2D texture;
+        varying vec2 texCoord;
+
+        void main()
+        {
+
+        vec4 color = texture2D(texture,texCoord)*tint;
+
+        gl_FragColor = color;
+
+        }
+
+    </script>
+
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV2.js"></script>
+    <script type="text/javascript" src="../Common/Models.js"></script>
+    <script type="text/javascript" src="../Common/Utility.js"></script>
+    <script type="text/javascript" src="Particles.js?1"></script>
+    <script type="text/javascript" src="../Common/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <ul>
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../Resume/Resume.html">Resume</a></li>
+                <li><a href="../../Portfolio.html">Portfolio</a></li>
+            </ul>
+        </nav>
+    </div>
+    <h1>Particles and instance</h1>
+
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+
+    <div class="left">
+        <fieldset>
+            <button type="button" id="t1"> Texture1 </button>
+            <button type="button" id="t2"> Texture2</button>
+</fieldset>
+    </div>
+
+    <footer>
+        <ul>
+            <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
+            <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
+        </ul>
+    </footer>
+</body>
+</html>
