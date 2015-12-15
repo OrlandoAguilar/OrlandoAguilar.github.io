@@ -1,5 +1,3 @@
-Web.config
-javascript.sln
-javascript.v12.suo
-angelexamples
-presentation
+_site
+.sass-cache
+.jekyll-metadata
