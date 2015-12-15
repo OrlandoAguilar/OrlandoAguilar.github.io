@@ -1,3 +1,6 @@
 _site
 .sass-cache
 .jekyll-metadata
+Web.config
+javascript.sln
+javascript.v12.suo
