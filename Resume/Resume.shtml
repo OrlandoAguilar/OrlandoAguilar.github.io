@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <!--#include file="/template/includes.html" -->
+        <title>Resume</title>
+	</head>
+	<body>
+        <!--#include file="/template/head.html" -->
+		<div class="container">
+            <iframe src="http://docs.google.com/gview?url=https://raw.githubusercontent.com/OrlandoAguilar/OrlandoAguilar.github.io/f0b7dbccd2fd033b274f1dab6359b36c08579617/Resume/Resume.pdf&embedded=true" style="width:718px; height:700px;" frameborder="0"></iframe>
+		
+        </div><!-- /.container -->
+
+        <h3>LinkedIn</h3>
+        <p><a href="https://www.linkedin.com/in/orlandoaguilarvivanco">Go to my profile.</a></p>
+
+        <!--#include file="/template/foot.html" -->
+	</body>
+</html>

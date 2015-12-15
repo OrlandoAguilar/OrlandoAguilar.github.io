@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+        <!--#include file="/template/includes.html" -->
+		<title>Orlando Aguilar Vivanco</title>
+		
+    </head>
+	<body>
+        <!--#include file="/template/head.html" -->
+		<div class="container">
+    		<div class="blurb">
+        		<h1>My name is Orlando Aguilar!</h1>
+				<p>I am a game programmer; studying currently an MSCS at DigiPen.</p>
+                
+                <p>My expertise is in image processing, computer graphics and game development.</p>
+                <p>
+                    Some of my projects can be found in my <a href="/Portfolio/Portfolio.shtml">Portfolio</a>.
+                </p>
+                <p>
+                    I have also published recently an article in IEEE entitled <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7222843&filter%3DAND(p_IS_Number%3A7222827)">Characterization of Nanotube Structures Using Digital-Segmented Images</a>, about using image processing to measure the thickness of nanotubes.
+                </p>
+                <p>
+                    I have successfully applied image processing techniques to video games in graphics.
+                </p>
+                <p>
+                    Currently I am working in a new video games which uses oculus. I am the platform engineer in this project, working with the Oculus integration using the C++ SDK, the user experience as a game designer, level design with an Oculus development in mind, the Windows System, Particle System and the Scripting System using LUA, with automatic reloading of scripts in real time (on debug) for faster development. 
+                </p>
+                <p>Personally, I enjoy working hard, making video games, researching and getting along with everyone.</p>
+
+</div>
+		</div>
+
+        <p><a href="https://www.linkedin.com/in/orlandoaguilarvivanco">Go to my LinkedIn profile.</a></p>
+
+        <!--#include file="/template/foot.html" -->
+	</body>
+</html>
