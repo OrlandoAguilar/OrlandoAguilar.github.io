@@ -1,20 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
 	<head>
+        <!--#include file="/template/includes.html" -->
 		<title>Orlando Aguilar Vivanco</title>
-		<link rel="stylesheet" type="text/css" href="../css/main.css">
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		
     </head>
 	<body>
-        <div class="header">
-            <nav>
-                <ul>
-                    <li><a href="/index.html">Home</a></li>
-                    <li><a href="/Resume/Resume.html">Resume</a></li>
-                    <li><a href="/Portfolio/Portfolio.html">Portfolio</a></li>
-                </ul>
-            </nav>
-        </div>
+        <!--#include file="/template/head.html" -->
 		<div class="container">
     		<div class="blurb">
         		<h1>Hi, I'm Orlando Aguilar Vivanco!</h1>
@@ -35,16 +27,11 @@
                 </p>
                 <p>Personally, I enjoy working hard, making video games, researching and getting along with everyone.</p>
 
-</div><!-- /.blurb -->
-		</div><!-- /.container -->
+</div>
+		</div>
 
         <p><a href="https://www.linkedin.com/in/orlandoaguilarvivanco">Go to my LinkedIn profile.</a></p>
 
-		<footer>
-    		<ul>
-        		<li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
-        		<li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
-			</ul>
-		</footer>
+        <!--#include file="/template/foot.html" -->
 	</body>
 </html>

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Orlando Aguilar Vivanco</title>
-    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <!--#include file="/template/includes.html" -->
+    <title>Portfolio</title>
     <meta name="keywords" content="WebGL,3D,Portfolio,JavaScript,Programming,Videogames,Games,Graphics,3D">
-    <meta name="author" content="Orlando Aguilar Vivanco">
 
     <meta http-equiv="Chache-Control" content="no-cache,no-store,must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -12,24 +11,20 @@
 
 </head>
 <body>
-    <div class="header">
-        <nav>
-            <ul>
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="../Resume/Resume.html">Resume</a></li>
-                <li><a href="../Portfolio/Portfolio.html">Portfolio</a></li>
-            </ul>
-        </nav>
-    </div>
+    <!--#include file="/template/head.html" -->
     <h1>Portfolio</h1>
      
-    <div class="listUrls">
+    <div class="list-group">
         <h2>Projects with downloads</h2>
         <nav>
             <ul>
-                <li><a href="Projects/Orly/Orly.html">Orly Game (Google Play) </a></li>
-                <li><a href="Projects/SignalsSlots/SignalsSlots.html">Signals and Slots (C++ implementations)</a></li>
-                <li><a href="Projects/Criptography/Criptography.html">Steganography (Java and Image Processing)</a></li>
+                <li><a href="Projects/Orly/Orly.html" class="list-group-item active">
+                     
+                        <h4 class="list-group-item-heading">Orly Game (Google Play)</h4>
+                        <p class="list-group-item-text">Google Play Game, using accelerometer and physics to deliver an attractive experience. Developed using Unity 3D.</p>
+                    </a></li>
+                <li><a href="Projects/SignalsSlots/SignalsSlots.html" class="list-group-item active">Signals and Slots (C++ implementations)</a></li>
+                <li><a href="Projects/Criptography/Criptography.html" class="list-group-item active">Steganography (Java and Image Processing)</a></li>
                 <li><a href="Projects/Humos/Humos.html">Humos (BennuGD, GPH)</a></li>
                 <li><a href="Projects/Catapult/Catapult.html">Catapult (BennuGD, Chipmunk physics engine)</a></li>
                 <li><a href="Projects/SpaceShipWar/SpaceShipWar.html">Space Ship War (XNA, C#)</a></li>
@@ -73,11 +68,6 @@
             </ul>
         </nav>
     </div>
-    <footer>
-        <ul>
-            <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
-            <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
-        </ul>
-    </footer>
+    <!--#include file="/template/foot.html" -->
 </body>
 </html>
