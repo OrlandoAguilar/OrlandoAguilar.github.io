@@ -1,0 +1,53 @@
+﻿---
+layout: default
+title: VacunaC (Java, MySQL)
+keywords: java, mysql
+---
+    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+
+        void
+        main()
+        {
+        gl_Position = vPosition;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        uniform vec4 color;
+        void
+        main()
+        {
+        gl_FragColor = color;
+        }
+    </script>
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV2.js"></script>
+    <script type="text/javascript" src="Paint.js"></script>
+    <script type="text/javascript" src="../Common/jscolor/jscolor.js"></script>
+
+   
+    <h1>Paint</h1>
+
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+
+    <form>
+        <fieldset class="fieldset-auto-width">
+            <legend>Parameters:</legend>
+            <div>
+                Brush color: <input class="color" value="66ff00" id="colorPicker">
+            </div>
+            <div>
+                Brush thickness: 1<input id="thicknesSlider" type="range"
+                              min="1" max="30" step="1" value="10" />
+                30
+            </div>
+        </fieldset>
+    </form>
+
