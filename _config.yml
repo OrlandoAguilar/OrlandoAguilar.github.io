@@ -11,8 +11,8 @@ email: orlando.aguilar@digipen.edu
 description: > # this means to ignore newlines until "baseurl:"
   Orlando Aguilar Vivanco Portfolio. Graphics and game programmer.
 baseurl: /
-url: "http://yourdomain.com" # the base hostname & protocol for your site
 github_username:  OrlandoAguilar
 
 # Build settings
 markdown: orlandoaguilar
+include: ["./Portfolio/interactive/*"]
