@@ -12,7 +12,7 @@
     -->
 
     <title>BRDF and Texturization</title>
-    <link rel="stylesheet" type="text/css" href="../../../css/main.css">
+
     <link rel="stylesheet" href="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.css">
 
     <script id="vertex-shader" type="x-shader/x-vertex">
@@ -183,47 +183,75 @@
     <script type="text/javascript" src="../Common/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="../Common/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
 
+    <!-- Bootstrap core CSS -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="/css/generalformat.css">
+    <link href="/css/carousel.css" rel="stylesheet">
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+
 </head>
 <body>
-    <div class="header">
-        <nav>
-            <ul>
-                <li><a href="../../../index.html">Home</a></li>
-                <li><a href="../../../Resume/Resume.html">Resume</a></li>
-                <li><a href="../../Portfolio.html">Portfolio</a></li>
-            </ul>
-        </nav>
-    </div>
-    <h1>BRDF and Texturization</h1>
+    <header class="navbar-wrapper">
+        <div class="container">
 
-    <canvas id="gl-canvas" width="1024" height="512">
-        Oops ... your browser doesn't support the HTML5 canvas element
-    </canvas>
-
-    <div class="left">
-        <form>
-            <fieldset class="fieldset-auto-width">
-                <legend>Sun:</legend>
-                <div>
-                    <label for="radius">distance</label>
-                    <input id="radius" name="radius" value="5" style="width:80px">
-                </div>
-
-                <div>
-                    <div class="slider">
-                        <label for="thetaSlider">&#928;</label>
-                        <div id="thetaSlider"></div>
+            <nav class="navbar navbar-inverse navbar-static-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/index.html">Orlando</a>
                     </div>
-                    <div class="slider">
-                        <label for="phiSlider">&#934;</label>
-                        <div id="phiSlider"></div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/Resume/Resume.html">Resume</a></li>
+                            <li><a href="/Portfolio/Portfolio.html">Portfolio</a></li>
+                        </ul>
                     </div>
                 </div>
-            </fieldset>
-        </form>
-    </div>
+            </nav>
 
-    <footer>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>BRDF and Texturization</h1>
+
+        <canvas id="gl-canvas" width="1024" height="512">
+            Oops ... your browser doesn't support the HTML5 canvas element
+        </canvas>
+
+        <div>
+            <form>
+                <fieldset class="fieldset-auto-width">
+                    <legend>Sun:</legend>
+                    <div>
+                        <label for="radius">distance</label>
+                        <input id="radius" name="radius" value="5" style="width:80px">
+                    </div>
+
+                    <div>
+                        <div class="slider">
+                            <label for="thetaSlider">&#928;</label>
+                            <div id="thetaSlider"></div>
+                        </div>
+                        <div class="slider">
+                            <label for="phiSlider">&#934;</label>
+                            <div id="phiSlider"></div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+    </div>
+    <footer class="footer">
         <ul>
             <li><a href="mailto:orlando.aguilar@digipen.edu">email</a></li>
             <li><a href="https://github.com/OrlandoAguilar">github.com/OrlandoAguilar</a></li>
