@@ -35,3 +35,9 @@ font-family:'Helvetica', 'Arial', 'Sans-Serif';
 	float: left;
 	background-color: #ddd;
 }
+
+.fieldset-auto-width {
+         display: inline-block;
+}
+
+ 
