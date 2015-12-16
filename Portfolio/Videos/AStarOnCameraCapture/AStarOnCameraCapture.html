@@ -35,10 +35,18 @@ keywords: programmer, games, graphics, image processing, opencv, c++
     <p>
         Some of the algorithms were developed in C++, others were taken from the OpenCV library.
     </p>
-
+<link href="/css/mouseinteraction.css" rel="stylesheet">
     <center>
-        <img src="sExp.jpg" alt="First Experiment" style="width:512px;height:288px;">
-        <img src="Image.jpg" alt="Second Experiment" style="width:512px;height:288px;">
-        <img src="or operations.jpg" alt="Third Experiment" style="width:512px;height:288px;">
-        <img src="scr3.png" alt="Fourth Experiment" style="width:512px;height:288px;">
+        <img class="interactive"  id="sc1" src="sExp.jpg" alt="First Experiment" style="width:512px;height:288px;">
+        <img class="interactive"  id="sc2"  src="Image.jpg" alt="Second Experiment" style="width:512px;height:288px;">
+        <img class="interactive"  id="sc3"  src="or operations.jpg" alt="Third Experiment" style="width:512px;height:288px;">
+        <img class="interactive"  id="sc4"  src="scr3.png" alt="Fourth Experiment" style="width:512px;height:288px;">
     </center>
+<script src="/js/bootbox.min.js"></script>
+	
+	<script> 
+		 $('#sc1').click(function() { bootbox.alert( {size: 'large', message:'<img src="sExp.jpg" style="width: 100%;">'}); });
+		 $('#sc2').click(function() { bootbox.alert({size: 'large', message:'<img src="Image.jpg" style="width: 100%;">'}); });
+		 $('#sc3').click(function() { bootbox.alert({size: 'large', message:'<img src="or operations.jpg" style="width: 100%;">'}); });
+		 $('#sc4').click(function() { bootbox.alert({size: 'large', message:'<img src="scr3.png" style="width: 100%;">'}); });
+	</script>

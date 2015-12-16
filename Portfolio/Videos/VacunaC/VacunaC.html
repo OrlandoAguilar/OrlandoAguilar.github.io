@@ -17,12 +17,25 @@ keywords: java, mysql
         </ul>
     </div>
     
+	<link href="/css/mouseinteraction.css" rel="stylesheet">
+	
     <center>
-        <img src="s1.png" alt="Screenshot" style="width:512px;height:288px;">
-        <img src="s2.png" alt="Screenshot" style="width:512px;height:288px;">
-        <img src="s3.png" alt="Screenshot" style="width:512px;height:288px;">
-        <img src="s4.png" alt="Screenshot" style="width:512px;height:288px;">
-        <img src="s5.png" alt="Screenshot" style="width:512px;height:288px;">
-        <img src="s6.png" alt="Screenshot" style="width:512px;height:288px;">
-        <img src="s7.png" alt="Screenshot" style="width:512px;height:288px;">
+        <img class="interactive"  id="s1"  src="s1.png" alt="Screenshot" style="width:512px;height:288px;">
+        <img class="interactive"  id="s2"  src="s2.png" alt="Screenshot" style="width:512px;height:288px;">
+        <img class="interactive"  id="s3"  src="s3.png" alt="Screenshot" style="width:512px;height:288px;">
+        <img class="interactive"  id="s4"  src="s4.png" alt="Screenshot" style="width:512px;height:288px;">
+        <img class="interactive"  id="s5"  src="s5.png" alt="Screenshot" style="width:512px;height:288px;">
+        <img class="interactive"  id="s6" src="s6.png" alt="Screenshot" style="width:512px;height:288px;">
+        <img class="interactive"  id="s7" src="s7.png" alt="Screenshot" style="width:512px;height:288px;">
     </center>
+<script src="/js/bootbox.min.js"></script>
+	
+	<script> 
+		 $('#s1').click(function() { bootbox.alert({size: 'large', message:'<img src="s1.png" style="width: 100%;">'}); });
+		 $('#s2').click(function() { bootbox.alert({size: 'large', message:'<img src="s2.png" style="width: 100%;">'}); });
+		 $('#s3').click(function() { bootbox.alert({size: 'large', message:'<img src="s3.png" style="width: 100%;">'}); });
+		 $('#s4').click(function() { bootbox.alert({size: 'large', message:'<img src="s4.png" style="width: 100%;">'}); });
+		 $('#s5').click(function() { bootbox.alert({size: 'large', message:'<img src="s5.png" style="width: 100%;">'}); });
+		 $('#s6').click(function() { bootbox.alert({size: 'large', message:'<img src="s6.png" style="width: 100%;">'}); });
+		 $('#s7').click(function() { bootbox.alert({size: 'large', message:'<img src="s7.png" style="width: 100%;">'}); });
+	</script>

@@ -3,9 +3,11 @@ layout: default
 title: Orly
 keywords: programmer, games, graphics, image processing, oculus
 ---
+<link href="/css/mouseinteraction.css" rel="stylesheet">
+
     <center>
-        <img src="sc1.png" alt="Screenshot Orly 1" style="width:512px;height:288px;">
-        <img src="sc2.png" alt="Screenshot Orly 2" style="width:512px;height:288px;">
+        <img class="interactive"  src="sc1.png" alt="Screenshot Orly 1" style="width:512px;height:288px;" id="sc1">
+        <img class="interactive"  src="sc2.png" alt="Screenshot Orly 2" style="width:512px;height:288px;" id="sc2">
     </center>
     <p>This is the first videogame that I have published in Google Play.</p>
    
@@ -32,3 +34,11 @@ keywords: programmer, games, graphics, image processing, oculus
     <h3>Download Section</h3>
     <p><a href="https://play.google.com/store/apps/details?id=orl.ag.orly">Go to Play Store</a></p>
     <p><a href="https://github.com/OrlandoAguilar/Orly">Go to the repository</a></p>
+
+	<script src="/js/bootbox.min.js"></script>
+	
+	<script> 
+		 $('#sc1').click(function() { bootbox.alert( {size: 'large', message:'<img src="sc1.png" style="width: 100%;">'}); });
+		 $('#sc2').click(function() { bootbox.alert({size: 'large', message:'<img src="sc2.png" style="width: 100%;">'}); });
+	</script>
+	
