@@ -1,0 +1,11 @@
+ <div class="container">
+
+        <ul class="thumbnails">
+    {% for post in site.posts %}
+      <li data-type="blog" data-id={{ post.date | date_to_string }} class="thumbnail" ><span>{{ post.date | date_to_string }}</span> <br>
+		<a class="thumbnailelement" id={{ post.date | date_to_string }} href="{{ post.url }}">{{ post.title }}
+			<img src="/images/{{post.date|date_to_string}}.png" alt="(click to go)" class="miniature">
+		</a>
+	  </li>
+    {% endfor %}
+  </ul>
