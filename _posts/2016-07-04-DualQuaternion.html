@@ -21,7 +21,7 @@ MathJax.Hub.Config({
 
 <!-- Make index a class in cs-->
 <div class="well">
-<p><h2>Table Of Contents</h2>
+<p><h2>Table Of Content</h2>
 <a href="#toc.1"><h4>1&nbsp;Introduction</h4></a>
 <a href="#toc.2"><h4>2&nbsp;Definition</h4></a>
 <a href="#toc.3"><h4>3&nbsp;Characteristics</h4></a>
@@ -31,7 +31,7 @@ MathJax.Hub.Config({
 		<ul>
 			<a href="#toc.4.1.1"><h6>4.1.1&nbsp;Arithmetic Operations</h6></a>
 		</ul>
-		<a href="#toc.4.2"><h5>4.2&nbsp;Dual Numbers Arithmetic Operations</h5></a>
+		<a href="#toc.4.2"><h5>4.2&nbsp;Dual Quaternions Arithmetic Operations</h5></a>
 	</ul>
 <a href="#toc.5"><h4>5&nbsp;Interpolation</h4></a>
 <ul>
@@ -48,14 +48,17 @@ MathJax.Hub.Config({
 
 <!-- Introdcution -->
 <a name="toc.1"><h1>1&nbsp;Introduction</h1></a>
+<p>In the present post, I will present dual quaternions in the area of real time computer graphics as a tool for animation (rotations and translation of bones and 3d objects), being an alternative to techniques like homogeneous matrices, VQS and quaternions.</p>
 
 <p>In the last years, several articles have appeared covering the topic of dual quaternions, articles such as <a href="#bib.0">[0]</a><a href="#bib.1">[1]</a><a href="#bib.2">[2]</a><a href="#bib.3">[3]</a><a href="#bib.4">[4]</a><a href="#bib.5">[5]</a> cover topics ranging from its algebra to their applications. </p>
 
-<p>One of the applications for dual quaternions is the representation of rotations and translations, being an excellent option for this task because not only are very compact, but also allows for concatenation and interpolation of both properties at the same time.
+<p>One of the applications for dual quaternions is the representation of rotations and translations, 
+being an excellent option for this task because they are not only very compact, but also allow for concatenation 
+and interpolation of both properties at the same time avoiding some of the problems that other techniques suffer such as gimbal lock.
 
 <a name="toc.2"><h1>2&nbsp;Definition</h1></a>
 <p>Dual quaternions can be understood as a combination of dual numbers and quaternions. Of special interest are the unit dual quaternions, that allow the representation of rotations and displacements at the same time.</p>
-<p>A dual quaternion can be represented using the form in Equation&nbsp;$\ref{dq}$, where p and q are ordinary quaternions (Equation&nbsp;$\ref{qnotatioon}$ shows some of the notations for quaternions) and $\epsilon$ is the dual unit.
+<p>A dual quaternion can be represented using the form in Equation&nbsp;$\ref{dq}$, where p and q are ordinary quaternions (Equation&nbsp;$\ref{qnotatioon}$ shows some of the notations for quaternions) and $\epsilon$ is the dual unit from dual numbers.
 
 \begin{equation}
 \begin{split}
@@ -68,7 +71,7 @@ Q&=p+ { q\epsilon}\\
 \begin{equation}
 \begin{split}
 p&=[p_w,p_x,p_y,p_z] \\ 
-&=p_w+ip_x+jp_y+kp_z \\
+&=[p_w+ip_x+jp_y+kp_z] \\
 &=[p_w,\vec{p_v}]
 \end{split}
 \label{qnotatioon}
@@ -76,7 +79,7 @@ p&=[p_w,p_x,p_y,p_z] \\
 
 <!-- Characteristics -->
 <a name="toc.3"><h1>3&nbsp;Characteristics</h1></a>
-<p>Because of the property of unit dual quaternions to represent both, the rotation and translation, this mathematical set presents several important characteristics and advantages with respect to other representations of rigid-body transformations. Some of the properties of this set are&nbsp;<a href="#bib.5">[5]</a>:</p>
+<p>In the area of computer graphics and 3d animation, this set shows very interesting characteristics and properties. Some of the properties of this set are&nbsp;<a href="#bib.5">[5]</a>:</p>
 	<ul>
 		<li> Combine rotation and translation in a unified variable
 		<li> Compact representation (only 8 scalars)
@@ -142,10 +145,11 @@ Addition in dual quaternions is done component wise, by the rule:
 
 \begin{equation*}
 \begin{split}
-Q_a + Q_b &=(p_a,q_a)+(p_b,q_b)\\
-&=(p_a+p_b,q_a+q_b)\\
-&= (p_{aw} + p_{bw})+i(p_{ax} + p_{bx})+j(p_{ay} + p_{by})+k(p_{az} + p_{bz})+\\
-&(q_{aw} + q_{bw})\epsilon+i(q_{ax} +q_{bx})\epsilon+j(q_{ay} + q_{by})\epsilon+k(q_{az} + q_{bz})\epsilon
+Q_a + Q_b &=(p_a+q_a\epsilon)+(p_b+q_b\epsilon)\\
+&=(p_a+p_b)+(q_a+q_b)\epsilon \\
+&\text{the quaternions look like:}\\
+&= [(p_{aw} + p_{bw})+i(p_{ax} + p_{bx})+j(p_{ay} + p_{by})+k(p_{az} + p_{bz})]\\
+&[\left((q_{aw} + q_{bw})+i(q_{ax} +q_{bx})+j(q_{ay} + q_{by})+k(q_{az} + q_{bz})\right)]\epsilon
 \end{split}
 \end{equation*}
 
@@ -154,10 +158,8 @@ In multiplication, the presence of an $\epsilon^2=0$ gets rid of part of the exp
 
 \begin{equation*}
 \begin{split}
-Q_a + Q_b &=(p_a,q_a)+(p_b,q_b)\\
-&=(p_a+p_b,q_a+q_b)\\
-&= (p_{aw} + p_{bw})+i(p_{ax} + p_{bx})+j(p_{ay} + p_{by})+k(p_{az} + p_{bz})+\\
-&(q_{aw} + q_{bw})\epsilon+i(q_{ax} +q_{bx})\epsilon+j(q_{ay} + q_{by})\epsilon+k(q_{az} + q_{bz})\epsilon
+Q_a + Q_b &=(p_a+q_a\epsilon)+(p_b+q_b\epsilon)\\
+&=p_a p_b+({p_a q_b}+{p_b q_a})\epsilon,
 \end{split}
 \end{equation*}
 
@@ -184,9 +186,8 @@ The conjugate is obtained from the conjugate of both of its quaternions, as foll
 
 \begin{equation*}
 \begin{split}
-\overline{(p,q)}&=(\overline{p},\overline{q})\\
-&= (p_{w}-ip_{x}-jp_{y} -kp_{z})+(q_{w}-iq_{x}-jq_{y}-kq_{z})\epsilon\\
-&= (p_w -\vec{p_v}) + (q_w-\vec{q_v})
+\overline{Q}&=\overline{p}+\overline{q}\epsilon\\
+&= [p_{w}-ip_{x}-jp_{y} -kp_{z}]+[q_{w}-iq_{x}-jq_{y}-kq_{z}]\epsilon
 \end{split}
 \end{equation*}
 
@@ -194,7 +195,7 @@ The conjugate is obtained from the conjugate of both of its quaternions, as foll
 The magnitude of a dual quaternion is equal to the squared root of the multiplication between the quaternion and its conjugate.
 
 \begin{equation*}
-\|(p,q)\|=\sqrt{(p,q)\overline{(p,q)}}
+\|Q\|=\sqrt{(p+q\epsilon)\overline{(p+q\epsilon)}}
 \end{equation*}
 
 <h3>Inverse</h3>
@@ -202,27 +203,29 @@ From the representation in Equation&nbsp;$~\ref{dq}$
 , for a dual quaternion with $p\neq zero$, the inverse dual quaternion is given by:
 
 \begin{equation*}
-inverse(p+q\epsilon)=p^{-1}(1-qp^{-1}\epsilon)
+Q^{-1}=p^{-1} \left(1-qp^{-1}\epsilon\right)
 \end{equation*}
 
 In the case of unit quaternions, however, the inverse is equals to its conjugate.
 
 <h3>Identity</h3>
 \begin{equation*}
-(p,q) =(1+0i+0j+0k],[0+0i+0j+0k])
+Q =[1+0i+0j+0k]+ [0+0i+0j+0k]\epsilon
 \end{equation*}
 
 <h3>Unit Quaternion</h3>
 It refers to the quaternion which magnitude is equal to 1.
 \begin{equation*}
-\|(p,q)\|=1
+\|Q\|=1
 \end{equation*}
 
 <h3>Dual Quaternion from position and Rotation</h3>
-As dual quaternions represent position and rotation of a rigid body, this information is enough to build them, and can be extracted from them too. The way to do it is expressed in Equations~\ref{fpr} to build a quaternion from this information, with $R$ a unit quaternion representing the rotation and $T$ a quaternion describing the translation according to the Equations~\ref{fprcomponent}. 
+As dual quaternions represent position and rotation of a rigid body, this information is enough to build them, and 
+can be extracted from them too. The way to do it is expressed in Equations~\ref{fpr} to build a quaternion from this information, 
+with $R$ a unit quaternion representing the rotation and $T$ a quaternion describing the translation according to the Equations\ref{fprcomponent}. 
 
 \begin{equation}
-(p,q) = (R,\frac{T R}{2})
+Q = \left(R+\frac{T R}{2}\epsilon \right)
 \label{fpr}
 \end{equation}
 
@@ -238,11 +241,12 @@ T&=[0,t_x,t_y,t_z]=[0,\vec{t}],
 
 with $\theta$ the angle of rotation, $\vec{n}=(n_x,n_y,n_z)$ the axis of rotation and $\vec{t}=(t_x,t_y,y_z)$ the translation vector and its components.
 
+<!-- Transformation of Vectors -->
 <h3>Transformation of Vectors</h3>
 In the same way that a normal quaternion, a dual quaternion can apply a transformation to a vector coordinate $\vec{v}$ as shown in Equation~\ref{vtrans}.
 
 \begin{equation}
-\vec{v}{'} = (p,q)\vec{v}{(p,q)}^{-1},
+\vec{v}{'} = (p+q\epsilon)\vec{v}{(p+q\epsilon)}^{-1},
 \label{vtrans}
 \end{equation}
 
@@ -270,7 +274,7 @@ The parameters used by the Pl&uuml;cker Coordinates can be converted from and to
 \begin{split}
 Screw\ parameters &= (\theta,d,\vec{I},\vec{m}),\\
 Dual-quaternion&=p+q\epsilon\\
-&=(w_r,\vec{v_r})+(w_d,\vec{v_d})\epsilon
+&=[w_r,\vec{v_r}]+[w_d,\vec{v_d}]\epsilon
 \end{split}
 \label{screwdual}
 \end{equation}
