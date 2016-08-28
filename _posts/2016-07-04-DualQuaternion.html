@@ -48,13 +48,12 @@ MathJax.Hub.Config({
 
 <!-- Introdcution -->
 <a name="toc.1"><h1>1&nbsp;Introduction</h1></a>
-<p>In the present post, I will present dual quaternions in the area of real time computer graphics as a tool for animation (rotations and translation of bones and 3d objects), being an alternative to techniques like homogeneous matrices, VQS and quaternions.</p>
+<p>In the present post, I will present dual quaternions in the area of real time computer graphics as a tool for animation (rotations and translation of bones and 3d objects), being an alternative to techniques like homogeneous matrices and VQS.</p>
 
 <p>In the last years, several articles have appeared covering the topic of dual quaternions, articles such as <a href="#bib.0">[0]</a><a href="#bib.1">[1]</a><a href="#bib.2">[2]</a><a href="#bib.3">[3]</a><a href="#bib.4">[4]</a><a href="#bib.5">[5]</a> cover topics ranging from its algebra to their applications. </p>
 
-<p>One of the applications for dual quaternions is the representation of rotations and translations, 
-being an excellent option for this task because they are not only very compact, but also allow for concatenation 
-and interpolation of both properties at the same time avoiding some of the problems that other techniques suffer such as gimbal lock.
+<p>In the next lines let me explain why dual quaternions are an option for representing homogeneous tranformations, concatenations and interpolation of movement and rotation. But before 
+entering into the meat I will need to first introduce some background such as dual numbers and Pl&uuml;cker Coordinates. About the typical quaternion, I will assume that the reader already knows how thy work.
 
 <a name="toc.2"><h1>2&nbsp;Definition</h1></a>
 <p>Dual quaternions can be understood as a combination of dual numbers and quaternions. Of special interest are the unit dual quaternions, that allow the representation of rotations and displacements at the same time.</p>
@@ -94,7 +93,7 @@ p&=[p_w,p_x,p_y,p_z] \\
 
 <!-- Dual Numbers -->
 <a name="toc.4.1"><h2>4.1&nbsp;Dual numbers</h2></a>
-<p>A dual number can be seen as an extension of the real numbers<a href="#bib.7">[7]</a> that add a new element $\epsilon$ (analogous to the imaginary unity) with the property $\epsilon^2=0$, but $\epsilon \neq 0$. Every dual number has the form in Equation$~\ref{dn}$.
+<p>A dual number can be seen as an extension of the real numbers<a href="#bib.7">[7]</a> that add a new element $\epsilon$ (analogous to the imaginary unit) with the property $\epsilon^2=0$, but $\epsilon \neq 0$. Every dual number has the form in Equation$~\ref{dn}$.
 
 \begin{equation}
 z=\alpha +\beta\epsilon
@@ -136,8 +135,9 @@ The conjugate of a dual number is analogous to the complex conjugate:
 \end{split}
 \end{equation*}
 
+<!-- Dual Quaternions operations-->
 <a name="toc.4.2"><h2>4.2&nbsp;Dual Quaternions Arithmetic Operations</h2></a>
-<p>As a combination of dual numbers and quaternions, dual quaternions inherit some of the properties and operations from both sets. From Equation$~\ref{dq}$, we see that a dual quaternion is made of two parts: a quaternion alone for the first part ($p$) and another quaternion ($q$) multiplied by the dual unit ($\epsilon$). With that in mind, and in order to simplify notation, the quaternion is also represented as an ordered pair with the form $(p,q)$, where the elements in this pair are the original quaternions, and the dual unit ($\epsilon$) is implicitly understood to be in the second element of the pair.
+<p>As a combination of dual numbers and quaternions, dual quaternions inherit some of the properties and operations from both sets. From Equation$~\ref{dq}$, we see that a dual quaternion is made of two parts: a quaternion alone for the first part ($p$) and another quaternion ($q$) multiplied by the dual unit ($\epsilon$). With that in mind, and in order to simplify notation, the quaternion is also represented as an ordered pair with the form $Q=p+q\epsilon$, where the elements in this pair are the original quaternions.
 The main operations for dual quaternions are addition, multiplication, conjugate, magnitude and inverse.
 
 <h3>Addition</h3>
@@ -158,7 +158,7 @@ In multiplication, the presence of an $\epsilon^2=0$ gets rid of part of the exp
 
 \begin{equation*}
 \begin{split}
-Q_a + Q_b &=(p_a+q_a\epsilon)+(p_b+q_b\epsilon)\\
+Q_a  Q_b &=(p_a+q_a\epsilon)(p_b+q_b\epsilon)\\
 &=p_a p_b+({p_a q_b}+{p_b q_a})\epsilon,
 \end{split}
 \end{equation*}
@@ -221,45 +221,50 @@ It refers to the quaternion which magnitude is equal to 1.
 
 <h3>Dual Quaternion from position and Rotation</h3>
 As dual quaternions represent position and rotation of a rigid body, this information is enough to build them, and 
-can be extracted from them too. The way to do it is expressed in Equations~\ref{fpr} to build a quaternion from this information, 
-with $R$ a unit quaternion representing the rotation and $T$ a quaternion describing the translation according to the Equations\ref{fprcomponent}. 
+can be extracted from them too. The way to do it is expressed in Equations\ref{fpr} to build a quaternion from this information, 
+with $r$ a unit quaternion representing the rotation and $t$ a quaternion describing the translation according to the Equations\ref{fprcomponent}. 
 
 \begin{equation}
-Q = \left(R+\frac{T R}{2}\epsilon \right)
+Q = \left(r+\frac{t r}{2}\epsilon \right)
 \label{fpr}
 \end{equation}
 
 
 \begin{equation}
 \begin{split}
-R&=[\cos(\frac{\theta}{2}),n_x\sin(\frac{\theta}{2}),n_y\sin(\frac{\theta}{2}),n_z\sin(\frac{\theta}{2})] = [\cos(\frac{\theta}{2}),\sin(\frac{\theta}{2})\vec{n} ] \\
-T&=[0,t_x,t_y,t_z]=[0,\vec{t}],
+r&=[\cos(\frac{\theta}{2}),n_x\sin(\frac{\theta}{2}),n_y\sin(\frac{\theta}{2}),n_z\sin(\frac{\theta}{2})] = [\cos(\frac{\theta}{2}),\sin(\frac{\theta}{2})\vec{n} ] \\
+t&=[0,c_x,c_y,c_z]=[0,\vec{c}],
 \end{split}
 \label{fprcomponent}
 \end{equation}
 
 
-with $\theta$ the angle of rotation, $\vec{n}=(n_x,n_y,n_z)$ the axis of rotation and $\vec{t}=(t_x,t_y,y_z)$ the translation vector and its components.
+with $\theta$ the angle of rotation, $\vec{n}=(n_x,n_y,n_z)$ the axis of rotation and $\vec{c}=(c_x,c_y,c_z)$ the translation vector and its components.
 
 <!-- Transformation of Vectors -->
 <h3>Transformation of Vectors</h3>
 In the same way that a normal quaternion, a dual quaternion can apply a transformation to a vector coordinate $\vec{v}$ as shown in Equation~\ref{vtrans}.
 
 \begin{equation}
-\vec{v}{'} = (p+q\epsilon)\vec{v}{(p+q\epsilon)}^{-1},
+\vec{v}{'} = Q\vec{v}{Q}^{-1},
 \label{vtrans}
 \end{equation}
 
 where $v=\left(1 + (iv_x+jv_y+kv_z)\epsilon \right)$ is the dual quaternion representation of the vector coordinate $\vec{v}$.
 
 <a name="toc.5"><h1>5&nbsp;Interpolation</h1></a>
-An important property of quaternions is that they can be interpolated easily. Among the techniques that can be used for interpolation, some very important and famous are LERP and SLERP, being SLERP a interpolation technique that achieves very smooth and nice results.
+An important property of quaternions is that they can be interpolated easily. Among the techniques that can be used for interpolation, some very important and famous are LERP and SLERP. The last one stands for Spherical Interpolation and achieve very smooth and nice results, therefore this post will focus in this one.
 
 In order to interpolate dual quaternions, it is necessary to calculate some of the parameters from the Pl&uuml;cker Coordinates first. Therefore, in the next section, an explanation about this coordinates and their parameters will be presented.
 
 <a name="toc.5.1"><h2>5.1&nbsp;Pl&uuml;cker Coordinates</h2></a>
 
-Pl&uuml;cker Coordinates are used to create Screw coordinates, which are normally a technique for representing lines<a href="#bib.8">[8]</a>. These coordinates are defined by:
+Pl&uuml;cker Coordinates are used to represent Screw Coordinates.
+The last ones which are normally a technique for representing lines<a href="#bib.8">[8]</a> can also be used for representing movement, rotation and translation. 
+Aha! this is what we want to do when making an interpolation with our dual quaternions. The best part is that there is a transformation from Screw Coordinates to dual quaternion. 
+The formulas may get a little bit weird now, but bear with me, it will be worthy.
+
+<p>Screw Coordinates oordinates are defined by:
 
 <ul>
 <li> $p$, is a point on the line
@@ -281,6 +286,7 @@ Dual-quaternion&=p+q\epsilon\\
 
 where besides $\vec{I}$ and $\vec{m}$, we also have $d$ representing the translation along the axis, and $\theta$ the angle of rotation.
 
+<!-- To Screw parameters-->
 <h4>Dual quaternion to Screw parameters</h4>
 
 \begin{equation}
@@ -305,24 +311,24 @@ w_d &= -\frac{d}{2}\sin\left(\frac{\theta}{2}\right)\\
 \label{sptdq}
 \end{equation}
 
-
+<!-- Vectorial Notation -->
 <a name="toc.5.2"><h2>5.2&nbsp;Vectorial Notation</h2></a>
 A normal unit quaternion can be calculated from an angle and an axis of rotation<a href="#bib.0">[0]</a>. Using the Screw parameters, a similar representation (Equation&nbsp;\ref{vnsi}) can be achieved for dual quaternions, that will allow to use spherical interpolation.
 
 \begin{equation}
 \begin{split}
-p+q\epsilon&=\cos\left( \frac{\theta + d\epsilon}{2} \right) + \left( \vec{I}+\vec{m}\epsilon \right)\sin \left( \frac{\theta + d\epsilon}{2} \right) \\
+Q&=\cos\left( \frac{\theta + d\epsilon}{2} \right) + \left( \vec{I}+\vec{m}\epsilon \right)\sin \left( \frac{\theta + d\epsilon}{2} \right) \\
 &= \cos \left( \frac{\widehat{\theta}}{2} \right)+ \widehat{\vec{v}}\sin \left( \frac{\widehat{\theta}}{2} \right),
 \end{split} 
 \label{vnsi}
 \end{equation}
 
-where $\widehat{\vec{v}}$ is a unit dual-vector  $\widehat{\vec{v}}=\vec{I}+\vec{m}\epsilon$, and $\widehat{\theta}$ is a dual-angle $\widehat{\theta}=\theta + d\epsilon$. Using this form for the dual quaternion allows the calculation of a dual quaternion to a power, which is required for calculations of spherical interpolation. With this in mind, the equation for rising a quaternion to a power becomes:
+where $\widehat{\vec{v}}$ is a unit dual-vector  $\widehat{\vec{v}}=\vec{I}+\vec{m}\epsilon$, and $\widehat{\theta}$ is a dual-angle $\widehat{\theta}=\theta + d\epsilon$. Using this form for the dual quaternion allows the calculation of a dual quaternion to a power $g$, which is required for calculations of spherical interpolation. With this in mind, the equation for rising a quaternion to a power becomes:
 
 \begin{equation}
 \begin{split}
-Q^t&=(p+q\epsilon)^t\\
-&= \cos \left( t\frac{\widehat{\theta}}{2} \right)+ \widehat{\vec{v}}\sin \left( t\frac{\widehat{\theta}}{2} \right)
+Q^g&=(p+q\epsilon)^g\\
+&= \cos \left( g\frac{\widehat{\theta}}{2} \right)+ \widehat{\vec{v}}\sin \left( g\frac{\widehat{\theta}}{2} \right)
 \end{split} 
 \label{vnsip}
 \end{equation}
@@ -333,11 +339,11 @@ ScLERP (Equation&nbsp;\ref{sclerp}
 ) is a extension of the quaternion SLERP for dual quaternions, which uses the power function (Equation&nbsp;\ref{vnsip}) to calculate the interpolation.
 
 \begin{equation}
-ScLERP(Q_1,Q_2,t)= Q_1\left( {Q_1}^{-1} Q_2 \right)^t,
+ScLERP(Q_1,Q_2,g)= Q_1\left( {Q_1}^{-1} Q_2 \right)^g,
 \label{sclerp}
 \end{equation}
 
-where $Q_1$ and $Q_2$ are the start and end unit dual quaternions and t is the interpolation amount with $t=[0,1]$.
+where $Q_1$ and $Q_2$ are the start and end unit dual quaternions and g is the interpolation amount with $g=[0,1]$.
 
 Therefore, the usage of ScLERP involves the following steps:
 
@@ -346,8 +352,8 @@ Therefore, the usage of ScLERP involves the following steps:
 	<li> Calculate $Q_{i12}={Q_1}^{-1} Q_2$
 	<li> Use Equation\ref{dqtsp} to convert $Q_{i12}$ to screw parameters.
 	<li> Use Equation\ref{vnsi} and Equation\ref{vnsip} to calculate the power function.
-	<li> Use Equation\ref{sptdq} to recover a normal dual quaternion $Q_{i12}^t$.
-	<li> Obtain the interpolated result by multiplying $Q_1$ and the previous result, $Q_1Q_{i12}^t$.
+	<li> Use Equation\ref{sptdq} to recover a normal dual quaternion $Q_{i12}^g$.
+	<li> Obtain the interpolated result by multiplying $Q_1$ and the previous result, $Q_1Q_{i12}^g$.
 </ol>
 
 <!-- applications -->
