@@ -45,6 +45,12 @@ MathJax.Hub.Config({
 
 <!-- Here the article actually starts -->
 
+<div style="margin: 0 auto; width:100%; height:800px;">
+    <object type="text/html" data="/Portfolio/interactive/DualQuaternions/DualQuaternions.html"
+            style="width:100%; height:100%; margin:1%;">
+    </object>
+</div>
+
 
 <!-- Introdcution -->
 <a name="toc.1"><h1>1&nbsp;Introduction</h1></a>
@@ -135,6 +141,18 @@ The conjugate of a dual number is analogous to the complex conjugate:
 \end{split}
 \end{equation*}
 
+<h4>Trigonometrics</h4>
+The trigonometric functions are derived from the Taylor Series. The compact expressions (and the ones that will be useful in the Pl&uuml;cker coordinates, later) are:
+
+\begin{equation*}
+cos\left( \frac{\theta+d\epsilon}{2} \right) = cos\left( \frac{\theta}{2} \right) - {\epsilon} {\frac{d}{2}} {sin\left( \frac{\theta}{2} \right)}
+\end{equation*}
+
+\begin{equation*}
+sin\left( \frac{\theta+d\epsilon}{2} \right) = sin\left( \frac{\theta}{2} \right) - {\epsilon} {\frac{d}{2}} {cos\left( \frac{\theta}{2} \right)}
+\end{equation*}
+
+
 <!-- Dual Quaternions operations-->
 <a name="toc.4.2"><h2>4.2&nbsp;Dual Quaternions Arithmetic Operations</h2></a>
 <p>As a combination of dual numbers and quaternions, dual quaternions inherit some of the properties and operations from both sets. From Equation$~\ref{dq}$, we see that a dual quaternion is made of two parts: a quaternion alone for the first part ($p$) and another quaternion ($q$) multiplied by the dual unit ($\epsilon$). With that in mind, and in order to simplify notation, the quaternion is also represented as an ordered pair with the form $Q=p+q\epsilon$, where the elements in this pair are the original quaternions.
@@ -156,12 +174,13 @@ Q_a + Q_b &=(p_a+q_a\epsilon)+(p_b+q_b\epsilon)\\
 <h3>Multiplication</h3>
 In multiplication, the presence of an $\epsilon^2=0$ gets rid of part of the expression, resulting in a more compact result compared with a normal quaternion multiplication.
 
-\begin{equation*}
+\begin{equation}
 \begin{split}
 Q_a  Q_b &=(p_a+q_a\epsilon)(p_b+q_b\epsilon)\\
 &=p_a p_b+({p_a q_b}+{p_b q_a})\epsilon,
 \end{split}
-\end{equation*}
+\label{reqmult}
+\end{equation}
 
 which gives the multiplication table, with multiplication order row times column:
 
@@ -181,15 +200,47 @@ k & k & j & -  i & -  1 & \epsilon  k & \epsilon  j & -  \epsilon  i & -  \epsil
 \end{equation*}
 
 
+
 <h3>Conjugate</h3>
-The conjugate is obtained from the conjugate of both of its quaternions, as follows:
+In dual quaternions we find three different conjugates forms. Each with different properties and uses.
+
+<h4>First Conjugate</h4>
+The first conjugate is obtained from the conjugate of both of its quaternions, as follows:
+
+
 
 \begin{equation*}
 \begin{split}
-\overline{Q}&=\overline{p}+\overline{q}\epsilon\\
+Q^*&=p^*+q^*\epsilon\\
 &= [p_{w}-ip_{x}-jp_{y} -kp_{z}]+[q_{w}-iq_{x}-jq_{y}-kq_{z}]\epsilon
 \end{split}
 \end{equation*}
+
+This conjugate allows to remove concatenated dual quaternions. For example: $Q=QAA$
+
+<h4>Second Conjugate</h4>
+We do not use the second conjugate in this article but still it will be mentioned.
+This is formed by negating the sign of the dual part of the dual quaternion:
+
+\begin{equation*}
+\begin{split}
+Q'&=p-q\epsilon\\
+&= [p_{w}+ip_{x}+jp_{y} +kp_{z}]+[-q_{w}-iq_{x}-jq_{y}-kq_{z}]\epsilon
+\end{split}
+\end{equation*}
+
+<h4>Third Conjugate</h4>
+This conjugate is the one used during transformation of vectors and vertices. And is the combination of the two previous conjugations.
+This conjugate is formed by conjugating only the first quaternion (the non dual part). 
+The dual part is conjugated twice, wich results in a non conjugated version.
+
+\begin{equation*}
+\begin{split}
+\overline{Q}&=p^*-{q^*}\epsilon\\
+&= [p_{w}-ip_{x}-jp_{y} -kp_{z}]+[-q_{w}+iq_{x}+jq_{y}+kq_{z}]\epsilon
+\end{split}
+\end{equation*}
+
 
 <h3>Magnitude</h3>
 The magnitude of a dual quaternion is equal to the squared root of the multiplication between the quaternion and its conjugate.
@@ -233,7 +284,7 @@ Q = \left(r+\frac{t r}{2}\epsilon \right)
 \begin{equation}
 \begin{split}
 r&=[\cos(\frac{\theta}{2}),n_x\sin(\frac{\theta}{2}),n_y\sin(\frac{\theta}{2}),n_z\sin(\frac{\theta}{2})] = [\cos(\frac{\theta}{2}),\sin(\frac{\theta}{2})\vec{n} ] \\
-t&=[0,c_x,c_y,c_z]=[0,\vec{c}],
+t&=\frac{[0,c_x,c_y,c_z]}{2}=[0,\frac{\vec{c}}{2}],
 \end{split}
 \label{fprcomponent}
 \end{equation}
@@ -246,11 +297,15 @@ with $\theta$ the angle of rotation, $\vec{n}=(n_x,n_y,n_z)$ the axis of rotatio
 In the same way that a normal quaternion, a dual quaternion can apply a transformation to a vector coordinate $\vec{v}$ as shown in Equation~\ref{vtrans}.
 
 \begin{equation}
-\vec{v}{'} = Q\vec{v}{Q}^{-1},
+\vec{v}{'} = Q\vec{v}{\overline{Q}},
 \label{vtrans}
 \end{equation}
 
-where $v=\left(1 + (iv_x+jv_y+kv_z)\epsilon \right)$ is the dual quaternion representation of the vector coordinate $\vec{v}$.
+where $v=[1 + 0i+0j+0k] + [0+ iv_x+jv_y+kv_z]\epsilon$ is the dual quaternion representation of the vector coordinate $\vec{v}$. 
+Notice that $\vec{v}$ is not divided by 2 as when the translation is transformed into a dual quaternion, and that the conjugate is the third version.
+
+<h3>Concatenation of transformations</h3>
+The concatenation of dual quaternions is just its multiplication $(Equation~\ref{reqmult})$. And therefore, the concatenation of their transformations is just the concatenation of the dual quaternions.
 
 <a name="toc.5"><h1>5&nbsp;Interpolation</h1></a>
 An important property of quaternions is that they can be interpolated easily. Among the techniques that can be used for interpolation, some very important and famous are LERP and SLERP. The last one stands for Spherical Interpolation and achieve very smooth and nice results, therefore this post will focus in this one.
@@ -269,7 +324,7 @@ The formulas may get a little bit weird now, but bear with me, it will be worthy
 <ul>
 <li> $p$, is a point on the line
 <li> $\vec{I}$ is the direction vector of the line
-<li> $\vec{m} = \vec(p-(0,0)) \times \vec{I}$ is the moment vector
+<li> $\vec{m} = \vec{(p-\vec{0})} \times \vec{I}$ is the moment vector
 <li> $\left( \vec{I},\vec{m} \right)$ are the six Pl&uuml;cker coordinates
 </ul>
 
@@ -339,7 +394,7 @@ ScLERP (Equation&nbsp;\ref{sclerp}
 ) is a extension of the quaternion SLERP for dual quaternions, which uses the power function (Equation&nbsp;\ref{vnsip}) to calculate the interpolation.
 
 \begin{equation}
-ScLERP(Q_1,Q_2,g)= Q_1\left( {Q_1}^{-1} Q_2 \right)^g,
+ScLERP(Q_1,Q_2,g)= Q_1\left( {Q_1}^{*} Q_2 \right)^g,
 \label{sclerp}
 \end{equation}
 
@@ -348,13 +403,21 @@ where $Q_1$ and $Q_2$ are the start and end unit dual quaternions and g is the i
 Therefore, the usage of ScLERP involves the following steps:
 
 <ol>
-	<li> Calculate the inverse of $Q_1$ which is equal to its complement as we are working with unit dual quaternions.
-	<li> Calculate $Q_{i12}={Q_1}^{-1} Q_2$
+	<li> Calculate the first conjugate of $Q_1$ (only work with unit dual quaternions).
+	<li> Calculate $Q_{i12}={Q_1}^{*} Q_2$
 	<li> Use Equation\ref{dqtsp} to convert $Q_{i12}$ to screw parameters.
 	<li> Use Equation\ref{vnsi} and Equation\ref{vnsip} to calculate the power function.
 	<li> Use Equation\ref{sptdq} to recover a normal dual quaternion $Q_{i12}^g$.
 	<li> Obtain the interpolated result by multiplying $Q_1$ and the previous result, $Q_1Q_{i12}^g$.
 </ol>
+
+
+<!-- Sclerp-->
+<h4>Faster Interpolation</h4>
+
+I have also notice in other articles that the interpolation can be performed by parts. This is actually really fast but I guess the quality may be different.
+They perform a SLERP with the first two quaternions (the non dual quaternions) and a LERP with the dual part (the second quaternions). In this way, they perform a very 
+fast interpolation.
 
 <!-- applications -->
 <a name="toc.6"><h1>6&nbsp;Applications</h1></a>
