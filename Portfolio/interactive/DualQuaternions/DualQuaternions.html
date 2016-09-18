@@ -165,11 +165,13 @@
         void main()
         {
 		
-			DQ A = Transformation(0.0,vec3(1,0,0), vec3(-0.2,0.0,0.0));	//dual quaternion transformation	
-			DQ B = Transformation(0.9,normalize(vec3(1,0,1)), vec3(0.2,0.0,0.0));	//dual quaternion transformation			
+			float fourthTurn=3.14159*0.5;
+		
+			DQ A = Transformation(0.0,vec3(0,1,0), vec3(-0.0,0.0,0.0));	//dual quaternion transformation	
+			DQ B = Transformation(fourthTurn,normalize(vec3(0,1,0)), vec3(0.0,0.0,0.0));	//dual quaternion transformation			
 			
-			DQ C = Transformation(0.0,vec3(0,1,0), vec3(0,0.0,0.0));	//dual quaternion transformation	
-			DQ D = Transformation(3.14159*0.5,normalize(vec3(0,1,0)), vec3(0,0.0,0.0));	//dual quaternion transformation
+			DQ C = Transformation(0.0,vec3(0,0,1), vec3(0,0.0,0.0));	//dual quaternion transformation	
+			DQ D = Transformation(fourthTurn,normalize(vec3(1,0,1)), vec3(0.0,1.2,1.0));	//dual quaternion transformation
 			
 			DQ Trf1 = InterpolateSlow(A,B,abs(sin(time)));			
 			DQ Trf2 = InterpolateSlow(C,D,abs(sin(time)));
@@ -248,61 +250,11 @@
         uniform int activeLight1;
         uniform int activeLight2;
 
-        float saturate(float f){
-        return max(f,0.0);
-        }
-
-
-        vec3 Emispheric(vec3 normal,vec3 upColor,vec3 downColor){
-        float fact=normal.y*0.5+0.5;    //to range 0-1
-        return mix(downColor,upColor,fact);
-        }
-
-        float DecayFact(float dec){
-        return 1.0/(dec*dec+dec+1.0);
-        }
-
-        vec3 Light(vec3 N, vec3 E, vec3 light,vec3 diffuseProduct,vec3 specularProduct,float shnss, float dfactor,float cone){
-
-        vec3 L= normalize(light);
-        vec3 H = normalize( L + E );
-
-        float Kd = saturate( dot(L, N) );
-        vec3  diffuse = Kd*diffuseProduct;
-
-        vec3  specular =vec3(0.0);
-
-        float decay=length(light.xyz);
-
-        if( Kd >= 0.0 ){
-        float Ks = pow( saturate(dot(N, H)), shnss );
-        specular = Ks * specularProduct;
-        }
-
-        float attn=1.0;
-        if (dfactor>0.0) attn=DecayFact(decay)*dfactor;
-        
-        if (cone>0.0 && dot(normalize(lightConeDirection2),-L) < cone){
-        attn=0.0;
-        }
-
-        return (diffuse+specular)*attn;
-        }
-
         void main(){
 
-        vec3 E= normalize(eye);
-        vec3 N=normalize(normal);
+			vec3 N=normalize(normal);
 
-        vec3 ambient=Emispheric(N,vec3(0.1),vec3(0.05));
-
-        vec3 l1=activeLight0>0? Light(N, E, light1, diffuseMaterial*diffuseLight1,specularMaterial*specularLight1,shininessMaterial, lightPosition1.w,-1.0) : vec3(0);
-        vec3 l2=activeLight1>0?Light(N, E, light2, diffuseMaterial*diffuseLight2,specularMaterial*specularLight2,shininessMaterial, lightPosition2.w,0.7) : vec3(0);
-        vec3 l3=activeLight2>0?Light(N, E, light3, diffuseMaterial*diffuseLight3,specularMaterial*specularLight3,shininessMaterial, lightPosition3.w,-1.0) : vec3(0);
-
-        vec3 color=l1+l2+l3+ambient*diffuseMaterial;
-
-        gl_FragColor = vec4(color,1);
+			gl_FragColor = vec4(N,1);
         }
     </script>
     <script type="text/javascript" src="../Common/webgl-utils.js"></script>
@@ -361,13 +313,28 @@
 		
 		<pre>
 			<code>
-In this example, I have written a interpolation for the sphere and the objects around it 
-(although they have an extra shift applied from javascript).
-The dual quaternions are A and B, defined as angle of rotation, axis of rotation 
-and displacement in the Transformation constructor below:
+In this example, there are two links (bones) that modify the mesh.
+The first one is the root, and its movement is:
 
-DQ A=Transformation(0.0,vec3(0,1,0), vec3(-1.0,0.0,0.0));		
-DQ B=Transformation(0.9,normalize(vec3(1,1,0)), vec3(1.0,0.0,0.0));				
+		           //(float rotation, vec3 axis of rotation, vec3 translation)
+DQ A = Transformation(0.0,            vec3(0,1,0),           vec3(-0.0,0.0,0.0));	
+DQ B = Transformation(fourthTurn,     normalize(vec3(0,1,0)),vec3(0.0,0.0,0.0));				
+
+Where A is the initial state, and B is the final state (an interpolation is 
+applied between both states)
+
+Then, I have a second link that is a child of the first one.
+
+DQ C = Transformation(0.0,vec3(0,0,1), vec3(0,0.0,0.0));	
+DQ D = Transformation(fourthTurn,normalize(vec3(1,0,1)), vec3(0.0,1.2,1.0));	
+
+The expected moment is for the first link a rotation in the y axis (up) 
+that oscillates with the time.  
+
+For the second link, in its local space it oscillates between two axis 
+rotating and besides it also translates in y and z.
+When the links movement gets composed (hierarchically), it results what 
+we can see in the animation.
 
 The interpolation is performed using a oscillating time.
 DQ Trf=InterpolateSlow(A,B,abs(sin(time)));
