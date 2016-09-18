@@ -22,6 +22,7 @@ function randi(min, max) {
     return Math.round((Math.random() * (max - min)) + min);
 }
 
+function clamp(a,b,c){return Math.max(b,Math.min(c,a))};
 
 function CameraController(element) {
     var controller = this;

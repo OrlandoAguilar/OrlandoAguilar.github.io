@@ -165,14 +165,38 @@
         void main()
         {
 		
-			DQ A=Transformation(0.0,vec3(0,1,0), vec3(-1.0,0.0,0.0));	//dual quaternion transformation	
-			DQ B=Transformation(0.9,normalize(vec3(1,1,0)), vec3(1.0,0.0,0.0));	//dual quaternion transformation			
+			DQ A = Transformation(0.0,vec3(1,0,0), vec3(-0.2,0.0,0.0));	//dual quaternion transformation	
+			DQ B = Transformation(0.9,normalize(vec3(1,0,1)), vec3(0.2,0.0,0.0));	//dual quaternion transformation			
 			
-			DQ Trf=InterpolateSlow(A,B,abs(sin(time)));
+			DQ C = Transformation(0.0,vec3(0,1,0), vec3(0,0.0,0.0));	//dual quaternion transformation	
+			DQ D = Transformation(3.14159*0.5,normalize(vec3(0,1,0)), vec3(0,0.0,0.0));	//dual quaternion transformation
 			
-			vec3 r=Transform(Trf,vPosition.xyz);							//apply transformation
+			DQ Trf1 = InterpolateSlow(A,B,abs(sin(time)));			
+			DQ Trf2 = InterpolateSlow(C,D,abs(sin(time)));
 			
-			vec4 pp=vec4(r,1.0);
+			DQ Trf2Global = Multiply(Trf1,Trf2);
+			
+			vec3 r = Transform(Trf1,vPosition.xyz);							//apply first transformation 
+			vec3 s = Transform(Trf2Global,vPosition.xyz);							//apply second transformation (children of Tfr1)
+			
+			float weight = vPosition.y+0.5;				
+			
+			/*
+			cylinder
+			
+			|....|  T1
+			|....|  .
+			|....|  .      lerp(T0,T1,y)
+			|....|  .
+			|....|  T0
+			
+			*/
+			
+			
+			
+			vec3 newCoordinate = mix(r,s,weight);
+			
+			vec4 pp=vec4(newCoordinate,1.0);
 
 			//vec4 pp=vec4(vPosition.xyz,1.0);
 			

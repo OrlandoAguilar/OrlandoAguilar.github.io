@@ -249,8 +249,7 @@ function Cone(sectors,radius) {
 
 var cylinders = [];     //hash table for cones
 
-function Cylinder(sectors,radius) {
-    const rings = 4;
+function Cylinder(sectors,radius,ringsMiddle = 2) {
     var hash = sectors;
 
     if (cylinders[hash]) {
@@ -265,8 +264,9 @@ function Cylinder(sectors,radius) {
 
         var indices = new Array(sectors * 6);
 
+		var rings = clamp( ringsMiddle +2, 4 , 24);
+		
         var data = new Array(rings * sectors * 8);
-
 
         var R = 1.0 / (rings - 1);
         var S = 1.0 / (sectors - 1);
@@ -293,28 +293,34 @@ function Cylinder(sectors,radius) {
             data[++index] = s * S;
             data[++index] = r * R;
         }
+		
+		var middleAreas = rings - 2; 
+		var advanceMiddle = 1.0 / middleAreas;
+		
 
+		for (r = 0; r <= middleAreas; ++r){
+			var y = 0.5 - (r * advanceMiddle);
 
-        for (r = 1; r <= 2; ++r)
-            for (s = 0; s < sectors; s++) {
-                var y = 1.5 - r;
-                var x = Math.cos(2 * PI * s * S);
-                var z = Math.sin(2 * PI * s * S);
+			for (s = 0; s < sectors; s++) {
+				var x = Math.cos(2 * PI * s * S);
+				var z = Math.sin(2 * PI * s * S);
 
-                //vertices
-                data[++index] = x * radius;
-                data[++index] = y;
-                data[++index] = z * radius;
+				//vertices
+				data[++index] = x * radius;
+				data[++index] = y;
+				data[++index] = z * radius;
 
-                //normal
-                data[++index] = x;
-                data[++index] = 0;
-                data[++index] = z;
+				//normal
+				data[++index] = x;
+				data[++index] = 0;
+				data[++index] = z;
 
-                //texture coordinates			
-                data[++index] = s * S;
-                data[++index] = r * R;
-            }
+				//texture coordinates			
+				data[++index] = s * S;
+				data[++index] = r * R * advanceMiddle * r;
+			}
+		}
+
 
         r = 3;
 
@@ -338,13 +344,15 @@ function Cylinder(sectors,radius) {
         }
 
         index = -1;
-        for (r = 0; r < rings - 1; r++) for (s = 0; s < sectors - 1; s++) {
-            indices[++index] = r * sectors + s;
-            indices[++index] = r * sectors + (s + 1);
-            indices[++index] = (r + 1) * sectors + (s + 1);
-            indices[++index] = (r + 1) * sectors + (s + 1);
-            indices[++index] = (r + 1) * sectors + s;
-            indices[++index] = r * sectors + s;
+        for (r = 0; r < rings ; r++){
+			for (s = 0; s < sectors - 1; s++) {
+				indices[++index] = r * sectors + s;
+				indices[++index] = r * sectors + (s + 1);
+				indices[++index] = (r + 1) * sectors + (s + 1);
+				indices[++index] = (r + 1) * sectors + (s + 1);
+				indices[++index] = (r + 1) * sectors + s;
+				indices[++index] = r * sectors + s;
+			}
         }
 
         //data buffer

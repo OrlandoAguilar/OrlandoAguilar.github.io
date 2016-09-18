@@ -41,7 +41,7 @@ var near = 0.3;
 var far = 1000.0;
 var radius = 8.0;
 var theta = 0.0;
-var phi = -1.1;
+var phi = 0.0;
 
 
 const at = vec3(0.0, 0.0, 0.0);
@@ -170,7 +170,7 @@ window.onload = function init() {
         step: 0.1,
         width: 20
     });
-
+/*
 	position = vec3(-1.2, 2, -1.2);
     Light[0] = new Cylinder(5, 0.2);
     Light[0].instance.type = LIGHT;
@@ -194,9 +194,9 @@ window.onload = function init() {
     Light[2].instance.specular = vec3(0, 0, 1);
     Light[2].instance.distance = 8.0;
     modelsList.push(Light[2]);
-
+*/
     position = vec3(0, 0, 0);
-    var m = new Sphere(30, 30,0.5);
+    var m = new Cylinder(10, 0.5, 10);
     modelsList.push(m);
 
     position = vec3(0);
@@ -228,7 +228,7 @@ function render() {
 
 	gl.uniform1f(timeLoc, thetaAnim);
 	
-    for (var i0 = 0; i0 < 3; ++i0) {        //only send them once in the beggining of the frame. They dont change with the objects
+  /*  for (var i0 = 0; i0 < 3; ++i0) {        //only send them once in the beggining of the frame. They dont change with the objects
         var th =  i0*2.09;//thetaAnim + no animations
         Light[i0].instance.position = vec3(Math.cos(th) * 1.5, 1.5, Math.sin(th) * 1.5);
         Light[i0].instance.Update();
@@ -239,11 +239,11 @@ function render() {
         gl.uniform3fv(diffuseLightLoc[i0], flatten(Light[i0].instance.diffuse));
         gl.uniform3fv(specularLightLoc[i0], flatten(Light[i0].instance.specular));
         gl.uniform1i(activeLightLoc[i0], activeLight[i0]);
-    }
+    }*/
 
-    var mlight = mult(View, Light[1].instance.Mat);
-    var dir = vec3(mult(mlight, vec4(0, -1, 0, 0)));
-    gl.uniform3fv(lightConeDirection2Loc, flatten(dir));
+    //var mlight = mult(View, Light[1].instance.Mat);
+    //var dir = vec3(mult(mlight, vec4(0, -1, 0, 0)));
+    //gl.uniform3fv(lightConeDirection2Loc, flatten(dir));
 
     for (var z = 0; z < modelsList.length; ++z) {
         var obj = modelsList[z];
@@ -266,7 +266,7 @@ function render() {
         gl.enableVertexAttribArray(vNormals);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.model.indexes);
-        gl.drawElements(gl.TRIANGLES, obj.model.numIndices, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.LINE_STRIP, obj.model.numIndices, gl.UNSIGNED_SHORT, 0);
         
 
     }
