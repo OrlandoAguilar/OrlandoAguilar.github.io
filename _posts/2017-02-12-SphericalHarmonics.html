@@ -1,0 +1,563 @@
+---
+layout: default
+title:  "Spherical Harmonics"
+date:   2017-02-12 17:35:38
+categories: SH Spherical Harmonics Irradiance map 
+--- 
+<!-- Scripts and stuff that are not in the header-->	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+<link href="/css/mouseinteraction.css" rel="stylesheet">
+
+<!-- Make index a class in cs-->
+<div class="well">
+<p><h2>Table Of Content</h2>
+<a href="#toc.1"><h4>1&nbsp;Introduction</h4></a>
+<a href="#toc.2"><h4>2&nbsp;Example</h4></a>
+<a href="#toc.3"><h4>3&nbsp;Background</h4></a>
+<a href="#toc.4"><h4>4&nbsp;Approximating Irradiance</h4></a>
+</div>
+
+<!-- Here the article actually starts -->
+<!--
+<div style="margin: 0 auto; width:100%; height:800px;">
+    <object type="text/html" data="/Portfolio/interactive/DualQuaternions/DualQuaternions.html"
+            style="width:100%; height:100%; margin:1%;">
+    </object>
+</div>
+-->
+
+<!-- Introdcution -->
+<a name="toc.1"><h1>1&nbsp;Introduction</h1></a>
+<p>
+
+Calculation of ambient light on a surfaces requieres to calculate the integral of the incoming light with respect to the whole atmosphere for every pixel.
+Calculation of the integral on real time is just not possible, however it is possible to precalculate that integral and store it somehow to be able to use that information at runtime.
+There are several ways to precalculate and store the results of the integral, among them we find irradiance maps and spherical harmonics.
+The irradiance map is an image that stores the result of the integral for "every possible" direction on the atmosphere. The Spherical Harmonics is a technique that allows to 
+approximate an irradiance map with just a few coefficients in a polynomial, thus serving as a way to compress its information and even to its calculation.
+
+<center>
+        <img class="interactive"  src="media/SH/IrradianceMap.png" alt="Irradiance map" style="width:200px;height:100px;" id="sc1">
+</center>
+
+</p>
+
+<a name="toc.1"><h1>2&nbsp;Global Illumination</h1></a>
+
+<p>
+How do you normally calculate an irradiance map?
+Irradicance can be calculated by integrating throught the whole atmosphere the light that comes to a certain point (of the surface we are shading), were the light is weighted by the cosine of the angle between the normal of the
+surface and the direction of the ray of light that comes to that point.
+</p>
+
+<p>
+
+<center>
+    <img class="interactive"  src="media/SH/CosineConvolution.png" alt="Cosine convolution" style="width:200px;height:200px;" id="sc1">
+</center>
+
+\begin{equation}
+\int L_i (N \cdot L) dw
+\end{equation}
+</p>
+<p>
+If you take a look at this equation, you can find something familiar. Yes, it looks like a convolution. A convolution of the function of the energy, coming to the point that you are shading, 
+with a kernel that represents that cosine of the angle.
+As with any convolution, calculating it by brute-force is really expensive, but calculations in the frequency domain will accelerate it.
+</p>
+<p>
+As always, Fourier transform is the favorite option for image processing guys when working in frequencies, but we can notice that because of the nature of the phenomena we try to approximate,
+working in spherical coordinates is a better fit... 
+Aha! Spherical Harmonics to the rescue. By transforming our functions to the frequency domain and working in this domain we can achieve even
+realtime rates. Besides, the pixels in the irradiance map as I explained before, we only are interested in approximating a light that changes smoothly, therefore we can approximate our function with only a few frequencies. 
+</p>
+<p>
+Are few frequencies enogh for a good approximation?
+</p>
+<p>
+Here it is where the magic happens, the frequency representation of the cosine of the angle that multiplies the incoming energy requieres only a few frequencies to be represented, as
+the higher frequencies of its representation are zero or very small numbers. You could use as few as 4 coefficients to get some nice light or 9 coefficients to make it richer in detail.
+</p>
+
+
+<p>
+The Rendering Equation as a Convolution.
+</p>
+<p>
+The Rendering Equation&nbsp;$\ref{RenderingEquation}$ can be seen as a convolution (Equation &nbsp;$\ref{convolution}$), where $x(\tau)$ is $L_i(w)$ and $s(t-\tau) = \overline{(N \cdot L)}$ is the kernel used in the convolution.
+</p>
+\begin{equation}
+\int \, L_i(w) \, \overline{(N \cdot L(w))} \, dw
+\label{RenderingEquation}
+\end{equation}
+
+
+\begin{equation}
+\int_{-\infty }^{\infty} x(\tau) s(t-\tau) d\tau
+\label{convolution}
+\end{equation}
+</p>
+<p>
+If we interprete this convolution, for any point in the surface of an object, the incoming light is the sum (integral) of any ray of incoming light weighted by the cosine of its angle with the normal. This is a simple convolution.
+
+</p>
+
+<p>
+Spherical harmonics.
+</p>
+<p>
+Spherical Harmonics (SH) allow to transform any signal to the frequency domain in Spherical Coordinates, as Fourier does in cartesian coordiantes. 
+</p>
+<p>
+In signal processing it is well known that a convolution in the time domain is equal to a multiplication in the frequency domain (that is why convolutions become so cheap in this domain). This is always used to accelerate operations in image processing. The same property can be
+used to accelerate the calculation of the incoming light for the rendering equation.
+</p>
+<p>
+Using this property to accelerate the calculations of the rendering equation will need then the transformation of $L_i(w)$ and $\overline{(N \cdot L)}$ to the frequency domain, multiply (for spherical harmonics, we don't have a simple multiplication as we have in Fourier, but the formula is still very simple, we will see later.) the resultant coefficients and transform 
+those coefficients back to the spatial/temporal domain.
+</p>
+<p>
+Transforming a Signal to the Frequency domain using Spherical Harmonics.
+</p>
+<p>
+The transformation of a signal from the tempora/spatial domain to the SH domain is done through the Equation$\ref{transformation}$, were $f(w)$ is your original function, $Y_l^m$ is the SH basis and $F_l^m$ is the coheficient of the transformation for that SH Basis.
+</p>
+<p>
+\begin{equation}
+F_l^m = \int f(w) \, Y_l^m (w) \, ds
+\label{transformation}
+\end{equation}
+
+</p>
+<p>
+
+The only thing we don't know from that equation is the SH Basis $Y_l^m$. It turns out there is a formula for those,
+</p>
+<p>
+\begin{equation}
+Y_l^m (\theta,\phi) = K_l^m \, e^{im\phi} \, P_l^{|m|} cos(\theta)
+\label{SHBasisEquation}
+\end{equation}
+
+</p>
+<p>
+
+
+with $K_l^m$ a normalization factor and $P_l^{|m|}$ the Legendre polynomials. It is important to notice that in Equation$\ref{transformation}$ $Y_l^m$ argument is w, while in Equation$\ref{SHBasisEquation}$
+I use $(\theta,\phi)$, it is because I am defining $Y_l^m$ in spherical coordinates, but the transformation  for graphics are usually done in the cartesian coordiante system, therefore $ w = (x,y,z) = (sin(\theta) * cos(\phi), sin(\theta) * sin(\phi), cos(\theta))$.
+</p>
+<p>
+You can get more information in https://www.cs.dartmouth.edu/~wjarosz/publications/dissertation/appendixB.pdf.
+</p>
+<p>
+This is the equation for the complex representation. In computer graphics we work with only the real part, and to be honest we precalculate those basis once and use them everywhere.
+In the next table, I am providing the precalculated basis in spherical and in cartesian coordinates. We used the cartesian coordinates, by the way.
+</p>
+<p>
+
+<table  align="center">
+  <tr  class="firstLine">
+    <th>Band</th>
+    <th>Base</th> 
+    <th>Spherical</th>
+	<th>Cartesian</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>$Y_0^0$</td>
+    <td> $\sqrt{\frac{1}{4\pi}}$ </td>
+	<td> $\sqrt{\frac{1}{4\pi}}$ </td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>$Y_1^{-1}$</td>
+    <td>$\sqrt{\frac{3}{4\pi}} sin\phi sin\theta$ </td>
+	<td> $\sqrt{\frac{3}{4\pi}} y$ </td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>$Y_1^{0}$</td>
+    <td>$\sqrt{\frac{3}{4\pi}} cos\theta$ </td>
+	<td> $\sqrt{\frac{3}{4\pi}} z$ </td>
+  </tr>
+  
+  <tr>
+    <td>1</td>
+    <td>$Y_1^{1}$</td>
+    <td>$\sqrt{\frac{3}{4\pi}} cos\phi sin\theta$ </td>
+	<td> $\sqrt{\frac{3}{4\pi}} x$ </td>
+  </tr>
+  <!-- Second band -->
+  <tr>
+    <td>2</td>
+    <td>$Y_2^{-2}$</td>
+    <td>$\sqrt{\frac{15}{4\pi}} sin\phi cos\phi sin^2\theta$ </td>
+	<td> $\sqrt{\frac{15}{4\pi}} xy$ </td>
+  </tr>  
+  
+  <tr>
+    <td>2</td>
+    <td>$Y_2^{-1}$</td>
+    <td>$\sqrt{\frac{15}{4\pi}} sin\phi sin\theta cos\theta$</td>
+	<td> $\sqrt{\frac{15}{4\pi}} yz$ </td>
+  </tr>  
+  
+  <tr>
+    <td>2</td>
+    <td>$Y_2^{0}$</td>
+    <td>$\sqrt{\frac{5}{16\pi}} (3cos^2\theta -1)$ </td>
+	<td> $\sqrt{\frac{5}{16\pi}} (3z^2 - 1)$ </td>
+  </tr>  
+  
+  <tr>
+    <td>2</td>
+    <td>$Y_2^{1}$</td>
+    <td>$\sqrt{\frac{15}{4\pi}} cos\phi sin\theta cos\theta$ </td>
+	<td> $\sqrt{\frac{15}{4\pi}} xz$ </td>
+  </tr>  
+  
+  <tr>
+    <td>2</td>
+    <td>$Y_2^{2}$</td>
+    <td>$\sqrt{\frac{15}{16\pi}} (cos^2\phi - sin^2 \phi ) sin^2 \theta$ </td>
+	<td> $\sqrt{\frac{15}{16\pi}} (x^2 - y^2)$ </td>
+  </tr>  
+  
+</table>
+
+</p>
+<p>
+You will notice that each Basis belongs to something called Band, and that each Band has certain number of Basis in increasing order. I personally see each band as an indicative of the frequency I am working with and each Basis in the Band as the Axis I am projecting my function on.
+For example, Band zero is the frequency zero $Cos (0*2*\pi*t)$, this frequency is constant and it turns out to be the average of the whole function $f(w)$ multiplied by a normalization factor that comes from the Basis.
+</p>
+<p>
+Once you calculate your coefficients $F_l^m$, you can get back to the original function by applying the inverse transformation (Equation inverse transform) which looks a lot like the original transformation.
+</p>
+<p>
+
+\begin{equation}
+f(w) = \int F_l^m \, Y_l^m (w) \, ds
+\label{inversetransformation}
+\end{equation}
+</p>
+<p>
+
+As with any other transformations to the frequency domain, the more frequencies we use, the better the approximation is to the original function. That being said, let me add that in computer graphics
+we cheat all the time, so we don't use a very good approximation, we actually use very few frequencies so that the processing time and memory consumption is low. So, don't be surprised when you see this.
+</p>
+<p>
+Convolution in Frequency domain.
+</p>
+<p>
+As we said previously, the convolution in frequencies is a multiplication. The equation for Spherical harmonics convolution with axial symetry is:
+</p>
+
+<p>
+\begin{equation}
+(h \ast f)_l^m = \sqrt{\frac{4\pi}{2l+1}} h_l^0 f_l^m,
+\label{convolutionEquation}
+\end{equation}
+</p>
+<p>
+where h is the kernel, and f is the function to apply the kernel on. 
+</p>
+<p>
+You can see the derivation in the following resource: https://www.cs.jhu.edu/~misha/Spring15/17.pdf
+</p>
+<p>
+
+Putting all together
+</p>
+<p>
+In short, for the convolution we see in the rendering equation can be performed in the following way:
+</p>
+<p>
+<ol>
+<li> Calculate SH transformation of the light $L_i(w)$</li>
+<li> Calculate SH transformation of the clampled cosine $\overline{(N \cdot L(w))}$</li>
+<li> Perform the convolution by multiplying the coefficients</li>
+<li> Apply inverse transformation to the previous result</li>
+</ol>
+</p>
+<p>
+where the coefficients for the SH clamped cosine are:
+</p>
+</p>
+<p>
+<table  align="center">
+    <tr> <td> h_0 </td>  <td>$\pi$ </td> </tr>
+    <tr> <td> h_1 </td>  <td>$\frac{2\pi}{3}$ </td> </tr> 
+    <tr> <td> h_2 </td>  <td>$\frac{\pi}{4}$ </td> </tr>
+	<tr> <td> h_3 </td>  <td>$0$ </td> </tr>
+</table>
+for l>0, odd bands get zero in the coefficient and even bands can be calculated with the fomula (https://cseweb.ucsd.edu/~ravir/papers/envmap/envmap.pdf)
+</p>
+
+
+<p>
+<p>
+
+\begin{equation}
+2\pi \frac{(-1)^{\frac{l}{2} - 1 }}{(l+2) (l-1)} \left[ \frac{l!}{2^l(\frac{l}{2}!)^2} \right]
+\label{evenElements}
+\end{equation}
+</p>
+
+
+<p>
+Examples:
+</p>
+<p>
+
+<pre><code class="java" >
+
+typedef Vec<double, 9> SHB;		//Vec is a class containing a vector of 9 doubles 
+
+SHB GetBase(const Vec3f& direction) {
+	float x = direction.val[0];
+	float y = direction.val[1];
+	float z = direction.val[2];
+	return SHB(
+		1,
+		y,
+		z,
+		x,
+		x*y,
+		y*z,
+		(3 * z*z - 1.0f),
+		x*z,
+		(x*x - y*y)
+		);
+}
+
+double function(double theta, double phi)
+{
+	//return Max(0, 5.0*cos(theta) - 4.0) + Max(0, -4.0 * sin(theta - pi) * cos(phi - 2.5) - 3.0); you can use any function you want, or even an image as in the next functions
+	return theta;
+}
+
+template< double(*Func)(double, double)>
+void SphericalHarmonicsOptimizedTransformationWithoutNoL(SHB& RB, int rows, int cols)
+{
+	double hf = pi / rows;
+	double wf = (2.0f * pi) / cols;
+	for (int j = 0; j < rows; ++j)
+	{
+
+		double phi = hf * double(j);
+		double  sinPhi = sin(phi);
+
+		for (int i = 0; i < cols; ++i)
+		{
+			double theta = wf * double(i);
+
+			Vec3f dir(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
+
+			SHB base = GetBase(dir);
+			double value = Func(theta, phi);
+
+			base *= sinPhi;
+			RB += base*value;
+
+		}
+	}
+
+	SHB coefficients(
+		0.282095f	 * hf * wf,		
+		-0.488603f	 * hf * wf,
+		0.488603f	 * hf * wf,
+		-0.488603f	 * hf * wf,
+		1.092548f	 * hf * wf,
+		-1.092548f	 * hf * wf,
+		0.315392f	 * hf * wf,
+		-1.092548f	 * hf * wf,
+		0.546274f	 * hf * wf
+		);
+
+	RB = RB.mul(coefficients);
+
+}
+
+SHB coefficients(
+	0.282095f ,		//factores multiplicados por pi
+	-0.488603f,
+	0.488603f ,
+	-0.488603f,
+	1.092548f ,
+	-1.092548f,
+	0.315392f ,
+	-1.092548f,
+	0.546274f 
+	);
+
+	
+ </code></pre>
+ 
+</p>
+
+<p>
+General code to calculate the irradiance map using SH to accelerate the transformation
+</p>
+<p>
+
+<pre><code class="java" >
+/*
+Takes an image and calculates the Coefficients for the ambient light.
+Those coefficients contain the convolution with the cosine.
+*/
+void SphericalHarmonicsOptimized(Mat_<Vec3f> &im, SHB& RB, SHB& GB, SHB& BB)
+{
+	double area = 0.0f;
+	float hf = pi / im.rows;
+	float wf = (2.0f * pi) / im.cols;
+	for (int j = 0; j < im.rows; ++j)
+	{
+
+		float phi = hf * float(j);
+		float  sinPhi = sin(phi) * hf * wf;
+
+		for (int i = 0; i < im.cols; ++i)
+		{
+			float theta = wf * float(i);
+
+			Vec3f dir(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
+
+			SHB base = GetBase2(dir);
+			Vec3f color =  im.at<Vec3f>(j, i);
+
+			base *= sinPhi;
+			area += sinPhi;
+			RB += base*color.val[0];
+			GB += base*color.val[1];
+			BB += base*color.val[2];
+
+		}
+	}
+	
+	float normalizationFactor = 1.0;
+
+	 SHB coefficients(
+		0.282095f * 3.141593f * normalizationFactor,		//factores multiplicados por pi
+		-0.488603f * 2.094395f * normalizationFactor,
+		0.488603f * 2.094395f * normalizationFactor,
+		-0.488603f * 2.094395f * normalizationFactor,
+		1.092548f * 0.785398f * normalizationFactor,
+		-1.092548f * 0.785398f * normalizationFactor,
+		0.315392f * 0.785398f * normalizationFactor,
+		-1.092548f * 0.785398f * normalizationFactor,
+		0.546274f * 0.785398f * normalizationFactor
+		) ;
+
+	 RB = RB.mul(coefficients) ; // (2 * pi*pi)
+	 GB = GB.mul(coefficients); 
+	 BB = BB.mul(coefficients); 
+	 std::cout << "area = " << area << std::endl;
+}
+	
+/*
+Applies the inverse transformation to the coefficients and save them in an irradiance map
+*/
+void InverseSphericalHarmonics(Mat_<Vec3f> &result, const SHB& RB, const SHB& GB, const SHB& BB)
+{
+	float hf = pi / result.rows;
+	float wf = (2.0f * pi) / result.cols;
+	for (int j = 0; j < result.rows; ++j)
+	{
+		float phi = hf * float(j);
+
+		for (int i = 0; i < result.cols; ++i)
+		{
+			float theta = wf * float(i);
+			Vec3f dir(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
+			SHB base = GetBase(dir);
+
+			base.mul(BaseCoeff);
+
+			Vec3f reslt;
+
+			reslt.val[0] = Max((float)base.ddot(RB), 0.0f);
+			reslt.val[1] = Max((float)base.ddot(GB), 0.0f);
+			reslt.val[2] = Max((float)base.ddot(BB), 0.0f);
+
+			result.at<Vec3f>(j, i) = reslt;		//transform to radiance to be used directly in my engine
+		}
+	}
+}
+
+
+ </code></pre>
+</p>
+
+Evaluation of ambient light from the spherical harmonics coefficients (calculated using the code before) in a pixel shader.
+<div style="margin: 0 auto; width:100%; height:1120px;">
+    <object type="text/html" data="/Portfolio/interactive/SphericalHarmonics/SHModel.html"
+            style="width:100%; height:100%; margin:1%;">
+    </object>
+</div>
+
+Displaying an irradiance map from SH coefficients. The default values for the coefficients are used to lit the previous scene. 
+
+<div style="margin: 0 auto; width:100%; height:1120px;">
+    <object type="text/html" data="/Portfolio/interactive/SphericalHarmonics/SH.html"
+            style="width:100%; height:100%; margin:1%;">
+    </object>
+</div>
+
+<!--
+<a name="toc.7"><h1>References</h1></a>
+<ol start=0>
+	<a href="http://cs.gmu.edu/&nbsp;jmlien/teaching/cs451/uploads/Main/dual-quaternion.pdf" name="bib.0"><li value=0>  Ben Kenwright, <i>A Beginners Guide to Dual-Quaternions,</i>  2011.
+	<a href="http://www.seas.upenn.edu/&nbsp;ladislav/kavan06dual/kavan06dual.pdf" name="bib.1"><li value=1>  Ladislav Kavan, Steven Collins, et-al, <i>Dual Quaternions for Rigid Transformation Blending,</i> 2006.
+	<a href="http://www.seas.upenn.edu/&nbsp;ladislav/kavan06dual/kavan06dual.pdf" name="bib.2"><li value=2>  Ladislav Kavan, Steven Collins, et-al, <i>Dual Quaternions for Rigid Transformation Blending,</i> 2006.
+	<a href="http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/other/dualQuaternion/" name="bib.3"><li value=3>  Martin John Baker, <i>Maths - Dual Quaternions,</i> 2015, [Online; accessed 8-December-2015].
+	<a href="https://en.wikipedia.org/w/index.php?title=Dual_quaternion&oldid=676267087" name="bib.4"><li value=4>  Wikipedia, <i>Dual quaternion --- Wikipedia, The Free Encyclopedia,</i> 2015, [Online; accessed 8-December-2015].  
+	<a href="http://www.xbdev.net/misc_demos/demos/dual_quaternions_beyond/paper.pdf" name="bib.5"><li value=5>  Ben Kenwright, <i>Dual-Quaternions: From Classical Mechanics to Computer Graphics and Beyond,</i> 2012.
+	<a href="http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/other/dualNumbers/index.htm" name="bib.6"><li value=6>  Martin John Baker, <i>Maths - Dual Numbers,</i> 2015, [Online; accessed 8-December-2015].
+	<a href="https://en.wikipedia.org/wiki/Dual_number" name="bib.7"><li value=7>  Wikipedia, <i>Dual number --- Wikipedia, The Free Encyclopedia,</i> 2015, [Online; accessed 8-December-2015]. 
+	<a href="http://www.euclideanspace.com/maths/geometry/elements/line/plucker/index.htm" name="bib.8"><li value=8>  Martin John Baker, <i>Maths - Pl&uuml;cker Coordinates,</i> 2015, [Online; accessed 8-December-2015].
+</ol>
+<hr>
+-->
+
+
+<script src="/js/bootbox.min.js"></script>
+	
+	<script> 
+		 $('#sc1').click(function() { bootbox.alert( {size: 'large', message:'<img src="media/SH/IrradianceMap.png" style="width: 100%;" class="img-rounded" >'}); });
+
+	</script>
+	
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+ *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+ *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+    this.page.url = {{ site.url }}{{ page.url | replace:'index.html',''}};  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = {{ site.url }}{{ page.url | replace:'index.html',''}}; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    s.src = '//http-orlandoaguilar-github-io.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                    
+

@@ -9,6 +9,7 @@ const PLANE = 4;
 const SPHERE = 1;
 const CONE = 2;
 const CYLINDER = 3;
+const OBJ = 4;
 
 function Instance() {
     this.Mat = mat4();
@@ -403,9 +404,6 @@ function Plane() {
         //create the model and save it on the hashtable
         this.model = new Model();
         this.model.type = PLANE;
-
-        var PI = 3.1415926535897;
-        var PI_2 = 3.1415926535897 / 2;
 
         var indices = [0,1,2,   0,2,3];
 

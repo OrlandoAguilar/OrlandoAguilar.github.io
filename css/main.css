@@ -112,3 +112,11 @@ ul.posts li {
   width: 100px;
   float: left;
 }
+
+.firstLine td{
+    border-bottom: 2px solid black;
+}
+
+.secondLine td{
+    border-bottom: 1px solid black;
+}
