@@ -22,10 +22,12 @@ MathJax.Hub.Config({
 <!-- Make index a class in cs-->
 <div class="well">
 <p><h2>Table Of Content</h2>
-<a href="#toc.1"><h4>1&nbsp;Introduction</h4></a>
-<a href="#toc.2"><h4>2&nbsp;Example</h4></a>
-<a href="#toc.3"><h4>3&nbsp;Background</h4></a>
-<a href="#toc.4"><h4>4&nbsp;Approximating Irradiance</h4></a>
+<a href="#toc.2"><h4>Irradiance Maps</h4></a>
+<a href="#toc.3"><h4>The Rendering Equation as a Convolution</h4></a>
+<a href="#toc.4"><h4>Spherical harmonics</h4></a>
+<a href="#toc.5"><h4>Convolution in Frequency domain</h4></a>
+<a href="#toc.6"><h4>Putting all together</h4></a>
+<a href="#toc.7"><h4>Examples:</h4></a>
 </div>
 
 <!-- Here the article actually starts -->
@@ -38,7 +40,7 @@ MathJax.Hub.Config({
 -->
 
 <!-- Introdcution -->
-<a name="toc.1"><h1>1&nbsp;Introduction</h1></a>
+<a name="toc.1"><h1>Irradiance map and Spherical Harmonics</h1></a>
 <p>
 
 Calculation of ambient light on a surfaces requieres to calculate the integral of the incoming light with respect to the whole atmosphere for every pixel.
@@ -48,12 +50,12 @@ The irradiance map is an image that stores the result of the integral for "every
 approximate an irradiance map with just a few coefficients in a polynomial, thus serving as a way to compress its information and even to its calculation.
 
 <center>
-        <img class="interactive"  src="media/SH/IrradianceMap.png" alt="Irradiance map" style="width:200px;height:100px;" id="sc1">
+        <img class="interactive"  src="images/SH/IrradianceMap.png" alt="Irradiance map" style="width:200px;height:100px;" id="sc1">
 </center>
 
 </p>
 
-<a name="toc.1"><h1>2&nbsp;Global Illumination</h1></a>
+<a name="toc.2"><h2>Irradiance Maps</h2></a>
 
 <p>
 How do you normally calculate an irradiance map?
@@ -64,7 +66,7 @@ surface and the direction of the ray of light that comes to that point.
 <p>
 
 <center>
-    <img class="interactive"  src="media/SH/CosineConvolution.png" alt="Cosine convolution" style="width:200px;height:200px;" id="sc1">
+    <img class="interactive"  src="images/SH/CosineConvolution.png" alt="Cosine convolution" style="width:200px;height:200px;" id="sc1">
 </center>
 
 \begin{equation}
@@ -83,7 +85,7 @@ Aha! Spherical Harmonics to the rescue. By transforming our functions to the fre
 realtime rates. Besides, the pixels in the irradiance map as I explained before, we only are interested in approximating a light that changes smoothly, therefore we can approximate our function with only a few frequencies. 
 </p>
 <p>
-Are few frequencies enogh for a good approximation?
+<h3>Are few frequencies enogh for a good approximation?</h3>
 </p>
 <p>
 Here it is where the magic happens, the frequency representation of the cosine of the angle that multiplies the incoming energy requieres only a few frequencies to be represented, as
@@ -91,9 +93,9 @@ the higher frequencies of its representation are zero or very small numbers. You
 </p>
 
 
-<p>
-The Rendering Equation as a Convolution.
-</p>
+<a name="toc.3"><h2>
+The Rendering Equation as a Convolution
+</h2></a>
 <p>
 The Rendering Equation&nbsp;$\ref{RenderingEquation}$ can be seen as a convolution (Equation &nbsp;$\ref{convolution}$), where $x(\tau)$ is $L_i(w)$ and $s(t-\tau) = \overline{(N \cdot L)}$ is the kernel used in the convolution.
 </p>
@@ -113,9 +115,9 @@ If we interprete this convolution, for any point in the surface of an object, th
 
 </p>
 
-<p>
-Spherical harmonics.
-</p>
+<a name="toc.4"><h2>
+Spherical harmonics
+</h2></a>
 <p>
 Spherical Harmonics (SH) allow to transform any signal to the frequency domain in Spherical Coordinates, as Fourier does in cartesian coordiantes. 
 </p>
@@ -256,9 +258,9 @@ f(w) = \int F_l^m \, Y_l^m (w) \, ds
 As with any other transformations to the frequency domain, the more frequencies we use, the better the approximation is to the original function. That being said, let me add that in computer graphics
 we cheat all the time, so we don't use a very good approximation, we actually use very few frequencies so that the processing time and memory consumption is low. So, don't be surprised when you see this.
 </p>
-<p>
+<a name="toc.5"><h2>
 Convolution in Frequency domain.
-</p>
+</h2></a>
 <p>
 As we said previously, the convolution in frequencies is a multiplication. The equation for Spherical harmonics convolution with axial symetry is:
 </p>
@@ -275,10 +277,9 @@ where h is the kernel, and f is the function to apply the kernel on.
 <p>
 You can see the derivation in the following resource: https://www.cs.jhu.edu/~misha/Spring15/17.pdf
 </p>
-<p>
-
+<a name="toc.6"><h2>
 Putting all together
-</p>
+</h2></a>
 <p>
 In short, for the convolution we see in the rendering equation can be performed in the following way:
 </p>
@@ -315,9 +316,9 @@ for l>0, odd bands get zero in the coefficient and even bands can be calculated 
 </p>
 
 
-<p>
+<a name="toc.7"><h2>
 Examples:
-</p>
+</h2></a>
 <p>
 
 <pre><code class="java" >
