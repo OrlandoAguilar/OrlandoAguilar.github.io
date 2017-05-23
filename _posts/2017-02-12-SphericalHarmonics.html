@@ -332,7 +332,6 @@ Examples:
 <p>
 
 <pre><code class="java" >
-
 typedef Vec<double, 9> SHB;		//Vec is a class containing a vector of 9 doubles 
 
 SHB GetBase(const Vec3f& direction) {
@@ -354,27 +353,26 @@ SHB GetBase(const Vec3f& direction) {
 
 double function(double theta, double phi)
 {
-	//return Max(0, 5.0*cos(theta) - 4.0) + Max(0, -4.0 * sin(theta - pi) * cos(phi - 2.5) - 3.0); you can use any function you want, or even an image as in the next functions
-	return theta;
+	//you can use any function you want, or even an image as in the next functions
+	//return Max(0, 5.0*cos(theta) - 4.0) + Max(0, -4.0 * sin(theta - pi) * cos(phi - 2.5) - 3.0); 
+	return Min(Max(theta, 0.0), 1.0);;
 }
 
 template< double(*Func)(double, double)>
-void SphericalHarmonicsOptimizedTransformationWithoutNoL(SHB& RB, int rows, int cols)
+void SphericalHarmonicsTransformation(SHB& RB, int rows, int cols)
 {
 	double hf = pi / rows;
 	double wf = (2.0f * pi) / cols;
 	for (int j = 0; j < rows; ++j)
 	{
-
 		double phi = hf * double(j);
 		double  sinPhi = sin(phi);
 
 		for (int i = 0; i < cols; ++i)
 		{
 			double theta = wf * double(i);
-
+			// Here, I am using the normal spherical coordinates formulas, however, in the shader the normal is used like normal.xzy changing the place of z and y to make sense of the data
 			Vec3f dir(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
-
 			SHB base = GetBase(dir);
 			double value = Func(theta, phi);
 
@@ -399,26 +397,12 @@ void SphericalHarmonicsOptimizedTransformationWithoutNoL(SHB& RB, int rows, int 
 	RB = RB.mul(coefficients);
 
 }
-
-SHB coefficients(
-	0.282095f ,		//factores multiplicados por pi
-	-0.488603f,
-	0.488603f ,
-	-0.488603f,
-	1.092548f ,
-	-1.092548f,
-	0.315392f ,
-	-1.092548f,
-	0.546274f 
-	);
-
 	
  </code></pre>
- 
 </p>
 
 <p>
-General code to calculate the irradiance map using SH to accelerate the transformation
+General code to calculate an irradiance map using SH to accelerate the transformation
 </p>
 <p>
 
@@ -442,6 +426,7 @@ void SphericalHarmonicsOptimized(Mat_<Vec3f> &im, SHB& RB, SHB& GB, SHB& BB)
 		{
 			float theta = wf * float(i);
 
+			// Here, I am using the normal spherical coordinates formulas, however, in the shader the normal is used like normal.xzy changing the place of z and y to make sense of the data
 			Vec3f dir(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
 
 			SHB base = GetBase2(dir);
@@ -470,10 +455,10 @@ void SphericalHarmonicsOptimized(Mat_<Vec3f> &im, SHB& RB, SHB& GB, SHB& BB)
 		0.546274f * 0.785398f * normalizationFactor
 		) ;
 
-	 RB = RB.mul(coefficients) ; // (2 * pi*pi)
+	 RB = RB.mul(coefficients) ; 
 	 GB = GB.mul(coefficients); 
 	 BB = BB.mul(coefficients); 
-	 std::cout << "area = " << area << std::endl;
+
 }
 	
 /*
@@ -490,7 +475,8 @@ void InverseSphericalHarmonics(Mat_<Vec3f> &result, const SHB& RB, const SHB& GB
 		for (int i = 0; i < result.cols; ++i)
 		{
 			float theta = wf * float(i);
-			Vec3f dir(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
+			
+			Vec3f dir(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));		
 			SHB base = GetBase(dir);
 
 			base.mul(BaseCoeff);
@@ -517,7 +503,10 @@ Evaluation of ambient light from the spherical harmonics coefficients (calculate
     </object>
 </div>
 
+
+<p>
 Displaying an irradiance map from SH coefficients. The default values for the coefficients are used to lit the previous scene. 
+</p>
 
 <div style="margin: 0 auto; width:100%; height:1120px;">
     <object type="text/html" data="/Portfolio/interactive/SphericalHarmonics/SH.html"
