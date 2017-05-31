@@ -43,7 +43,7 @@ MathJax.Hub.Config({
 <a name="toc.1"><h1>Irradiance map and Spherical Harmonics</h1></a>
 <p>
 
-Calculation of ambient light on a surfaces requieres to calculate the integral of the incoming light, with respect to the whole atmosphere, for each point on the surface.
+Calculation of ambient light on a surfaces requires to calculate the integral of the incoming light, with respect to the whole atmosphere, for each point on the surface.
 Calculation of the integral on real time is just not possible, however it is possible to precalculate that integral and store it, somehow, to be able to use that information at runtime.
 There are several ways to precalculate and store the results of the integral, among them we find irradiance maps and spherical harmonics.
 The irradiance map is an image that stores the result of the integral for "every possible" direction on the atmosphere. The Spherical Harmonics is a technique that allows to 
@@ -73,7 +73,7 @@ surface and the direction of that ray.
 </center>
 
 \begin{equation}
-\int L_i (N \cdot L) dw
+\int L_i(w) (N \cdot w) dw
 \label{IrradianceEq}
 \end{equation}
 </p>
@@ -94,9 +94,9 @@ realtime rates.
 <h4>Are few frequencies enogh for a good approximation?</h4>
 </p>
 <p>
-Here it is where the magic happens. The frequency representation of the cosine of the angle that multiplies the incoming energy requieres only a few frequencies to be represented, as
+Here it is where the magic happens. The frequency representation of the cosine of the angle that multiplies the incoming energy requires only a few frequencies to be represented, as
 the higher frequencies of its representation are zero or very small numbers. You could use as few as 4 coefficients to get some nice light or 9 coefficients to make it richer in detail.
-We can see that this is the case on the pixels of the irradiance map, which change slowly it intensity and color. 
+We can see that this is the case on the pixels of the irradiance map, which change slowly in intensity and color. 
 </p>
 
 
@@ -104,10 +104,10 @@ We can see that this is the case on the pixels of the irradiance map, which chan
 The Rendering Equation as a Convolution
 </h2></a>
 <p>
-The Rendering Equation&nbsp;$\ref{RenderingEquation}$ can be seen as a convolution (Equation &nbsp;$\ref{convolution}$), where $x(\tau)$ is $L_i(w)$ and $s(t-\tau) = \overline{(N \cdot L)}$ is the kernel used in the convolution.
+The Rendering Equation&nbsp;$\ref{RenderingEquation}$ can be seen as a convolution (Equation &nbsp;$\ref{convolution}$), where $x(\tau)$ is $L_i(w)$ and $s(t-\tau) = \overline{(N \cdot w)}$ is the kernel used in the convolution.
 </p>
 \begin{equation}
-\int \, L_i(w) \, \overline{(N \cdot L(w))} \, dw
+\int \, L_i(w) \, \overline{(N \cdot w)} \, dw
 \label{RenderingEquation}
 \end{equation}
 
@@ -132,14 +132,14 @@ Spherical Harmonics (SH) allow to transform any signal to the frequency domain i
 In signal processing it is well known that a convolution in the time domain is equal to a multiplication in the frequency domain (that is why convolutions become so cheap in this domain). This is always used to accelerate operations in image processing. 
 </p>
 <p>
-Using this property to accelerate the calculations of the rendering equation will need then the transformation of $L_i(w)$ and $\overline{(N \cdot L)}$ to the frequency domain, multiply (for spherical harmonics, we don't have a simple multiplication as we have in Fourier, but the formula is still very simple, we will see later.) the resultant coefficients and transform 
+Using this property to accelerate the calculations of the rendering equation will need then the transformation of $L_i(w)$ and $\overline{(N \cdot w)}$ to the frequency domain, multiply (for spherical harmonics, we don't have a simple multiplication as we have in Fourier, but the formula is still very simple, we will see later.) the resultant coefficients and transform 
 those coefficients back to the spatial/temporal domain.
 </p>
 <h4>
 Transforming a Signal to the Frequency domain using Spherical Harmonics.
 </h4>
 <p>
-The transformation of a signal from the tempora/spatial domain to the SH domain is done through the Equation$~\ref{transformation}$, were $f(w)$ is your original function, $Y_l^m$ is the SH basis and $F_l^m$ is the coeficient of the transformation for that SH Basis.
+The transformation of a signal from the temporal/spatial domain to the SH domain is done through the Equation$~\ref{transformation}$, were $f(w)$ is your original function, $Y_l^m$ is the SH basis and $F_l^m$ is the coeficient of the transformation for that SH Basis.
 </p>
 <p>
 \begin{equation}
@@ -162,14 +162,14 @@ Y_l^m (\theta,\phi) = K_l^m \, e^{im\phi} \, P_l^{|m|} cos(\theta)
 <p>
 
 
-with $K_l^m$ a normalization factor and $P_l^{|m|}$ the Legendre polynomials. It is important to notice that in Equation$~\ref{transformation}$ $Y_l^m$ argument is w, while in Equation$\ref{SHBasisEquation}$
+with $K_l^m$ a normalization factor and $P_l^{|m|}$ the Legendre polynomials. It is important to notice that in Equation$~\ref{transformation}$, $Y_l^m$ argument is w, while in Equation$~\ref{SHBasisEquation}$
 I use $(\theta,\phi)$. This is because I am defining $Y_l^m$ in spherical coordinates, but the transformation  for graphics are usually done in the cartesian coordiante system, therefore $ w = (x,y,z) = (sin(\theta) * cos(\phi), sin(\theta) * sin(\phi), cos(\theta))$.
 </p>
 <p>
-You can get more information in <a href="#bib.0">[0]</a>.
+You can get more information from <a href="#bib.0">[0]</a>.
 </p>
 <p>
-This is the equation for the complex representation. In computer graphics we work with only the real part, and to be honest we precalculate those basis once and use them everywhere.
+Equation$~\ref{SHBasisEquation}$ for the complex representation. In computer graphics we work with only the real part, and to be honest we precalculate those basis once and use them everywhere.
 In the next table, I am providing the precalculated basis in spherical and in cartesian coordinates. We used the cartesian coordinates, by the way.
 </p>
 <p>
@@ -261,7 +261,7 @@ f(w) = \int F_l^m \, Y_l^m (w) \, ds
 </p>
 <p>
 
-As with any other transformations to the frequency domain, the more frequencies we use, the better the approximation is to the original function. That being said, let me add that in computer graphics
+As with any other transformation to the frequency domain, the more frequencies we use, the better the approximation is to the original function. That being said, let me add that in computer graphics
 we cheat all the time, so we don't use a very good approximation, we actually use very few frequencies so that the processing time and memory consumption is low. So, don't be surprised when you see this.
 </p>
 <a name="toc.5"><h2>
@@ -278,7 +278,7 @@ As we said previously, the convolution in frequencies is a multiplication. The e
 \end{equation}
 </p>
 <p>
-where h is the kernel, and f is the function to apply the kernel on. 
+where $h$ is the kernel, and $f$ is the function to apply the kernel on. 
 </p>
 <p>
 You can see the derivation in <a href="#bib.1">[1]</a>: 
@@ -292,7 +292,7 @@ In short, the convolution we see in the rendering equation can be performed in t
 <p>
 <ol>
 <li> Calculate SH transformation of the light $L_i(w)$</li>
-<li> Calculate SH transformation of the clampled cosine $\overline{(N \cdot L(w))}$</li>
+<li> Calculate SH transformation of the clampled cosine $\overline{(N \cdot w)}$</li>
 <li> Perform the convolution with Equation$~\ref{convolutionEquation}$</li>
 <li> Apply inverse transformation to the previous result</li>
 </ol>
@@ -307,10 +307,10 @@ this means that we just need to multiply them with the coefficients of the SH li
 <table  align="center">
 
 	<tr> <td> Band $~$</td> <td>$~$Value </td> </tr>
-    <tr> <td> h_0 </td> <td>$\pi$ </td> </tr>
-    <tr> <td> h_1 </td> <td>$\frac{2\pi}{3}$ </td> </tr> 
-    <tr> <td> h_2 </td> <td>$\frac{\pi}{4}$ </td> </tr>
-	<tr> <td> h_3 </td> <td>$0$ </td> </tr>
+    <tr> <td> $h_0$ </td> <td>$\pi$ </td> </tr>
+    <tr> <td> $h_1$ </td> <td>$\frac{2\pi}{3}$ </td> </tr> 
+    <tr> <td> $h_2$ </td> <td>$\frac{\pi}{4}$ </td> </tr>
+	<tr> <td> $h_3$ </td> <td>$0$ </td> </tr>
 </table>
 for l>1, odd bands get zero in the coefficient, and even bands can be calculated with the Equation$~\ref{evenElements}$ as reported by <a href="#bib.2">[2]</a>.
 </p>
@@ -505,6 +505,8 @@ Evaluation of ambient light from the spherical harmonics coefficients (calculate
 
 
 <p>
+<br>
+<br>
 Displaying an irradiance map from SH coefficients. The default values for the coefficients are used to lit the previous scene. 
 </p>
 
