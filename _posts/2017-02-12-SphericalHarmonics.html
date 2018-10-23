@@ -43,7 +43,7 @@ MathJax.Hub.Config({
 <a name="toc.1"><h1>Irradiance map and Spherical Harmonics</h1></a>
 <p>
 
-Calculation of ambient light on a surfaces requires to calculate the integral of the incoming light, with respect to the whole atmosphere, for each point on the surface.
+Calculation of ambient light on a surface requires to calculate the integral of the incoming light, with respect to the whole atmosphere, for each point on the surface.
 Calculation of the integral on real time is just not possible, however it is possible to precalculate that integral and store it, somehow, to be able to use that information at runtime.
 There are several ways to precalculate and store the results of the integral, among them we find irradiance maps and spherical harmonics.
 The irradiance map is an image that stores the result of the integral for "every possible" direction on the atmosphere. The Spherical Harmonics is a technique that allows to 
@@ -91,10 +91,10 @@ Aha! Spherical Harmonics to the rescue. By transforming our functions to the fre
 realtime rates. 
 </p>
 <p>
-<h4>Are few frequencies enogh for a good approximation?</h4>
+<h4>Are few frequencies enough for a good approximation?</h4>
 </p>
 <p>
-Here it is where the magic happens. The frequency representation of the cosine of the angle that multiplies the incoming energy requires only a few frequencies to be represented, as
+Here is where the magic happens. The frequency representation of the cosine of the angle that multiplies the incoming energy requires only a few frequencies to be represented, as
 the higher frequencies of its representation are zero or very small numbers. You could use as few as 4 coefficients to get some nice light or 9 coefficients to make it richer in detail.
 We can see that this is the case on the pixels of the irradiance map, which change slowly in intensity and color. 
 </p>
@@ -118,7 +118,7 @@ The Rendering Equation&nbsp;$\ref{RenderingEquation}$ can be seen as a convoluti
 \end{equation}
 </p>
 <p>
-If we interprete this convolution, for any point in the surface of an object, the incoming light is the sum (integral) of any ray of incoming light weighted by the cosine of its angle with the normal. This is a simple convolution.
+If we interpret this convolution, for any point in the surface of an object, the incoming light is the sum (integral) of any ray of incoming light weighted by the cosine of its angle with the normal. This is a simple convolution.
 
 </p>
 
@@ -129,11 +129,10 @@ Spherical harmonics
 Spherical Harmonics (SH) allow to transform any signal to the frequency domain in Spherical Coordinates, as Fourier does in cartesian coordiantes. 
 </p>
 <p>
-In signal processing it is well known that a convolution in the time domain is equal to a multiplication in the frequency domain (that is why convolutions become so cheap in this domain). This is always used to accelerate operations in image processing. 
+In signal processing, it is well known that a convolution in the time domain is equal to a multiplication in the frequency domain (that is why convolutions become so cheap in this domain). This is always used to accelerate operations in image processing. 
 </p>
 <p>
-Using this property to accelerate the calculations of the rendering equation will need then the transformation of $L_i(w)$ and $\overline{(N \cdot w)}$ to the frequency domain, multiply (for spherical harmonics, we don't have a simple multiplication as we have in Fourier, but the formula is still very simple, we will see later.) the resultant coefficients and transform 
-those coefficients back to the spatial/temporal domain.
+In order to use this property to accelerate the calculations of the rendering equation, we will need the transformation of $L_i(w)$ and $\overline{(N \cdot w)}$ to the frequency domain, after that we will multiplying  the resultant coefficients and transform those coefficients back to the spatial/temporal domain (For spherical harmonics, the convolution in frequencies is not a simple multiplication as it is in Fourier, but the formula is still very simple, we will see later.) 
 </p>
 <h4>
 Transforming a Signal to the Frequency domain using Spherical Harmonics.
@@ -169,7 +168,7 @@ I use $(\theta,\phi)$. This is because I am defining $Y_l^m$ in spherical coordi
 You can get more information from <a href="#bib.0">[0]</a>.
 </p>
 <p>
-Equation$~\ref{SHBasisEquation}$ for the complex representation. In computer graphics we work with only the real part, and to be honest we precalculate those basis once and use them everywhere.
+Equation$~\ref{SHBasisEquation}$ is for the complex representation. In computer graphics we work only with the real part, and to be honest we precalculate those basis once and use them everywhere.
 In the next table, I am providing the precalculated basis in spherical and in cartesian coordinates. We used the cartesian coordinates, by the way.
 </p>
 <p>
@@ -246,7 +245,7 @@ In the next table, I am providing the precalculated basis in spherical and in ca
 
 </p>
 <p>
-You will notice that each Basis belongs to something called Band, and that each Band has certain number of Basis in increasing order. I personally see each band as an indicative of the frequency I am working with and each Basis in the Band as the Axis I am projecting my function on.
+You will notice that each Basis belongs to something called Band, and that each Band has certain number of Basis in increasing order. I personally see each band as an indicative of the frequency I am working with and each Basis in the Band as the Axis I am projecting my function onto.
 For example, Band zero is the frequency zero $Cos (0*2*\pi*t)$, this frequency is constant and it turns out to be the average of the whole function $f(w)$ multiplied by a normalization factor that comes from the Basis.
 </p>
 <p>
@@ -273,7 +272,7 @@ As we said previously, the convolution in frequencies is a multiplication. The e
 
 <p>
 \begin{equation}
-(h \ast f)_l^m = \sqrt{\frac{4\pi}{2l+1}} h_l^0 f_l^m,
+(h \ast f)_l^m = \sqrt{\frac{4\pi}{2l+1}} h_l^0 F_l^m,
 \label{convolutionEquation}
 \end{equation}
 </p>
